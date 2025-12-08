@@ -1,0 +1,75 @@
+:root {
+  --cur-auto: auto;
+  --cur-default: default;
+  --cur-pointer: pointer;
+  --cur-text: text;
+  --cur-vertical-text: vertical-text;
+  --cur-crosshair: crosshair;
+  --cur-move: move;
+  --cur-grab: grab;
+  --cur-grabbing: grabbing;
+  --cur-not-allowed: not-allowed;
+  --cur-wait: wait;
+  --cur-progress: progress;
+  --cur-resize-ew: ew-resize;
+  --cur-resize-ns: ns-resize;
+  --cur-resize-nesw: nesw-resize;
+  --cur-resize-nwse: nwse-resize;
+}
+
+body.tbh {
+  --cur-auto: url('../media/tbhCursors/tbh-normal.cur'), auto;
+  --cur-default: url('../media/tbhCursors/tbh-normal.cur'), default;
+  --cur-pointer: url('../media/tbhCursors/tbh-link.cur'), pointer;
+  --cur-text: url('../media/tbhCursors/tbh-text.cur'), text;
+  --cur-vertical-text: url('../media/tbhCursors/tbh-text.cur'), vertical-text;
+  --cur-crosshair: url('../media/tbhCursors/tbh-crosshair.cur'), crosshair;
+  --cur-move: url('../media/tbhCursors/tbh-move.cur'), move;
+  --cur-grab: url('../media/tbhCursors/tbh-crosshair.cur'), grab;
+  --cur-grabbing: url('../media/tbhCursors/tbh-crosshair.cur'), grabbing;
+  --cur-not-allowed: url('../media/tbhCursors/tbh-no.ani'), not-allowed;
+  --cur-wait: url('../media/tbhCursors/tbh-working.ani'), wait;
+  --cur-progress: url('../media/tbhCursors/tbh-busy.ani'), progress;
+  --cur-resize-ew: url('../media/tbhCursors/tbh-horizontal.cur'), ew-resize;
+  --cur-resize-ns: url('../media/tbhCursors/tbh-vertical.cur'), ns-resize;
+  --cur-resize-nesw: url('../media/tbhCursors/tbh-nesw.cur'), nesw-resize;
+  --cur-resize-nwse: url('../media/tbhCursors/tbh-nwse.cur'), nwse-resize;
+}
+
+* {
+  cursor: inherit;
+}
+
+
+body, html {
+  cursor: var(--cur-default);
+}
+
+a, button, [role="button"] {
+  cursor: var(--cur-pointer);
+}
+
+input, textarea, code, [contenteditable] {
+  cursor: var(--cur-text);
+}
+
+.vertical-text {
+  cursor: var(--cur-vertical-text);
+}
+
+.crosshair {
+  cursor: var(--cur-crosshair);
+}
+
+.move { cursor: var(--cur-move); }
+.grab { cursor: var(--cur-grab); }
+.grabbing { cursor: var(--cur-grabbing); }
+.not-allowed { cursor: var(--cur-not-allowed); }
+
+.wait { cursor: var(--cur-wait); }
+.loading { cursor: var(--cur-progress); }
+
+.resize-ew    { cursor: var(--cur-resize-ew); }
+.resize-ns    { cursor: var(--cur-resize-ns); }
+.resize-nesw  { cursor: var(--cur-resize-nesw); }
+.resize-nwse  { cursor: var(--cur-resize-nwse); }
