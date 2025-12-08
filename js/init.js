@@ -1,5 +1,4 @@
-import { gridInjector,make } from "./util/injectionUtil.js";
-import { loadJson } from "./util/jsonUtil.js";
+import { make } from "./util/injectionUtil.js";
 import * as cookieUtil from "./util/cookieUtil.js"
 
 function createImage(attrs = {}, styles = {}) {
@@ -21,12 +20,7 @@ const injectors = [
 		load: () => {
 			return fetch("./donatorPages/navBar.html")
 				.then(r => r.text())
-				.then(async html => {
-					const template = document.createElement('template');
-					template.innerHTML = html;
-					const fragment = template.content;
-					return fragment;
-				});
+				.then(async html => document.createRange().createContextualFragment(html));
 		},
   	},
 	{
