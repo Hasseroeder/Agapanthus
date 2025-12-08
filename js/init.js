@@ -1,19 +1,6 @@
 import { make } from "./util/injectionUtil.js";
 import * as cookieUtil from "./util/cookieUtil.js"
 
-function createImage(attrs = {}, styles = {}) {
-	const img = document.createElement("img");
-	Object.entries(attrs).forEach(([key, val]) => {
-		if ((key === "width" || key === "height") && typeof val === "number") {
-			img[key] = val;
-		} else {
-			img.setAttribute(key, val);
-		}
-	});
-	Object.assign(img.style, styles);
-	return img;
-}
-
 const injectors = [
   	{
 		selector: "#navbar",
@@ -30,11 +17,8 @@ const injectors = [
 				{file:"blinkiesCafe-7m.gif" ,href:"https://blinkies.cafe/"},
 				{file:"blinkiesCafe-ji.gif" ,href:"https://blinkies.cafe/"},
 				{file:"autism_blinkie2.gif" ,cookie:"tbh"},
-				{file:"advert_blinkie.gif"  ,href:"https://github.com/Hasseroeder/Basement/"},
-				{file:"rbot_blinkie.gif"    ,href:"https://discord.com/oauth2/authorize?client_id=519287796549156864&scope=bot%20applications.commands&permissions=347200"},
 				{file:"obs_blinkie.gif"     ,href:"https://discord.gg/owobot"},
 				{file:"anydice_blinkie.gif" ,href:"https://anydice.com/"},
-				{file:"neon_blinkie.gif"    ,href:"https://discord.gg/neonutil"},
 				{file:"dontasktoask_blinkie.png",href:"https://dontasktoask.com/"}
 			];
 
