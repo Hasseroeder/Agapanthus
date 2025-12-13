@@ -1,0 +1,253 @@
+name: Generate gallery manifests
+
+on:
+  push:
+    paths:
+      - 'gallery/**'
+      - '.github/workflows/generate-manifests.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install Pillow exifread
+
+      - name: Create script directory
+        run: mkdir -p .github/scripts
+
+      - name: Write manifest generator script
+        run: |
+          cat > .github/scripts/generate_manifests.py <<'PY'
+#!/usr/bin/env python3
+import os
+import json
+import sys
+from pathlib import Path
+from PIL import Image, PngImagePlugin, JpegImagePlugin
+import exifread
+from datetime import datetime
+
+GALLERY_DIR = Path("gallery")
+
+IMAGE_EXTS = {'.jpg', '.jpeg', '.png', '.gif', '.tiff', '.tif', '.webp'}
+
+def read_exif_via_exifread(path):
+    try:
+        with open(path, 'rb') as f:
+            tags = exifread.process_file(f, details=False)
+        # Common EXIF keys
+        title = None
+        description = None
+        creation = None
+        tags_list = None
+
+        # ImageDescription often holds description
+        if 'Image ImageDescription' in tags:
+            description = str(tags.get('Image ImageDescription'))
+        # XPTitle or XPComment sometimes present (encoded as bytes)
+        for k in ('Image XPTitle', 'Image XPComment', 'Image XPSubject'):
+            if k in tags:
+                val = tags.get(k)
+                try:
+                    title = str(val)
+                except Exception:
+                    title = None
+        # DateTimeOriginal
+        if 'EXIF DateTimeOriginal' in tags:
+            creation = str(tags.get('EXIF DateTimeOriginal'))
+        elif 'Image DateTime' in tags:
+            creation = str(tags.get('Image DateTime'))
+
+        # XPKeywords or Keywords
+        if 'Image XPKeywords' in tags:
+            kw = tags.get('Image XPKeywords')
+            try:
+                tags_list = [s.strip() for s in str(kw).split(';') if s.strip()]
+            except Exception:
+                tags_list = None
+
+        return title, description, creation, tags_list
+    except Exception:
+        return None, None, None, None
+
+def read_png_text(img):
+    info = img.info or {}
+    title = info.get('Title') or info.get('title') or info.get('TitleText')
+    description = info.get('Description') or info.get('description') or info.get('Comment') or info.get('comment')
+    creation = info.get('Creation Time') or info.get('creation_time') or info.get('date:create') or info.get('DateTime')
+    keywords = info.get('Keywords') or info.get('keywords') or info.get('Subject') or info.get('Tags')
+    tags_list = None
+    if keywords:
+        if isinstance(keywords, (list, tuple)):
+            tags_list = list(keywords)
+        else:
+            tags_list = [s.strip() for s in str(keywords).split(';') if s.strip()]
+    return title, description, creation, tags_list
+
+def normalize_date(s):
+    if not s:
+        return None
+    s = str(s).strip()
+    # Try common EXIF format: "YYYY:MM:DD HH:MM:SS"
+    try:
+        if ':' in s and s.count(':') >= 2 and ' ' in s:
+            # replace first two colons for parsing
+            parts = s.split(' ')
+            date_part = parts[0].replace(':', '-', 2)
+            dt = date_part + ' ' + parts[1]
+            # try parse
+            try:
+                parsed = datetime.strptime(dt, "%Y-%m-%d %H:%M:%S")
+                return parsed.isoformat()
+            except Exception:
+                pass
+        # Try ISO-like
+        parsed = datetime.fromisoformat(s)
+        return parsed.isoformat()
+    except Exception:
+        return s  # fallback to raw string
+
+def extract_image_metadata(path: Path):
+    title = description = creation = tags_list = None
+    ext = path.suffix.lower()
+    try:
+        if ext in {'.jpg', '.jpeg', '.tiff', '.tif'}:
+            # Use exifread for JPEG/TIFF
+            t, d, c, tags = read_exif_via_exifread(path)
+            title = t or None
+            description = d or None
+            creation = normalize_date(c) if c else None
+            tags_list = tags or None
+            # fallback to Pillow for additional PNG-like text (rare for jpg)
+            try:
+                with Image.open(path) as im:
+                    info = im.info or {}
+                    if not title:
+                        title = info.get('Title') or info.get('title')
+                    if not description:
+                        description = info.get('Description') or info.get('comment')
+            except Exception:
+                pass
+        elif ext == '.png':
+            with Image.open(path) as im:
+                t, d, c, tags = read_png_text(im)
+                title = t or None
+                description = d or None
+                creation = normalize_date(c) if c else None
+                tags_list = tags or None
+        else:
+            # other formats: try Pillow info and exifread as fallback
+            try:
+                with Image.open(path) as im:
+                    info = im.info or {}
+                    title = info.get('Title') or info.get('title')
+                    description = info.get('Description') or info.get('comment')
+                    creation = normalize_date(info.get('Creation Time') or info.get('DateTime'))
+                    keywords = info.get('Keywords') or info.get('keywords')
+                    if keywords:
+                        tags_list = [s.strip() for s in str(keywords).split(';') if s.strip()]
+            except Exception:
+                pass
+
+    except Exception:
+        pass
+
+    # Normalize empty strings to None
+    def norm(x):
+        if x is None:
+            return None
+        if isinstance(x, str) and x.strip() == '':
+            return None
+        return x
+
+    return {
+        "title": norm(title),
+        "description": norm(description),
+        "creation_date": norm(creation),
+        "tags": tags_list or None
+    }
+
+def is_image_file(name):
+    return Path(name).suffix.lower() in IMAGE_EXTS
+
+def generate_manifest_for_dir(dirpath: Path):
+    items = sorted(os.listdir(dirpath))
+    folders = [n for n in items if (dirpath / n).is_dir()]
+    files = [n for n in items if (dirpath / n).is_file() and n != 'manifest.json']
+
+    manifest = {
+        "path": str(dirpath.as_posix()),
+        "folders": folders,
+        "files": files,
+        "images": {}
+    }
+
+    for f in files:
+        if is_image_file(f):
+            meta = extract_image_metadata(dirpath / f)
+            manifest["images"][f] = meta
+
+    return manifest
+
+def main():
+    if not GALLERY_DIR.exists() or not GALLERY_DIR.is_dir():
+        print("No gallery directory found. Exiting.")
+        sys.exit(0)
+
+    changed = False
+    # Walk directories under gallery including gallery itself
+    for root, dirs, files in os.walk(GALLERY_DIR):
+        dirpath = Path(root)
+        manifest = generate_manifest_for_dir(dirpath)
+        manifest_path = dirpath / "manifest.json"
+        # Write pretty JSON with stable ordering
+        new_content = json.dumps(manifest, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
+        if manifest_path.exists():
+            old = manifest_path.read_text(encoding='utf-8')
+            if old != new_content:
+                manifest_path.write_text(new_content, encoding='utf-8')
+                changed = True
+        else:
+            manifest_path.write_text(new_content, encoding='utf-8')
+            changed = True
+
+    if changed:
+        print("Manifests updated.")
+        sys.exit(0)
+    else:
+        print("No changes to manifests.")
+        sys.exit(0)
+
+if __name__ == "__main__":
+    main()
+PY
+
+      - name: Run manifest generator
+        run: |
+          python .github/scripts/generate_manifests.py
+
+      - name: Commit and push changes if any
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add gallery/**/manifest.json || true
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update gallery manifests" || true
+            git push
+          else
+            echo "No manifest changes to commit."
+          fi
