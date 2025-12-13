@@ -1,5 +1,4 @@
 /gallery /gallery/gallery.html 200
-/gallery/ /gallery/gallery.html 200
 
 /index /index/index.html 200
-/index/ /index/index.html 200
+/ /index/index.html 200
