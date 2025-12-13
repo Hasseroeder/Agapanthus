@@ -1,52 +1,4 @@
-#!/usr/bin/env python3
-"""
-scripts/generate_manifests.py
-
-Scan gallery/ and create manifest.json in every directory.
-- Lists immediate folders and files (excluding manifest.json).
-- For image files extracts title, description, creation_date, tags when available.
-- Supports common image formats: jpg jpeg png gif tiff tif webp
-- Writes pretty JSON with stable ordering.
-"""
-
-import os
-import json
-import sys
-from pathlib import Path
-from datetime import datetime
-
-try:
-    from PIL import Image
-except Exception:
-    Image = None
-
-try:
-    import exifread
-except Exception:
-    exifread = None
-
-GALLERY_DIR = Path("gallery")
-IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif", ".tiff", ".tif", ".webp"}
-
-
-def normalize_date(s):
-    if not s:
-        return None
-    s = str(s).strip()
-    # EXIF common format "YYYY:MM:DD HH:MM:SS"
-    try:
-        if ":" in s and s.count(":") >= 2 and " " in s:
-            date_part, time_part = s.split(" ", 1)
-            # replace first two colons with dashes
-            dp = date_part.replace(":", "-", 2)
-            dt = f"{dp} {time_part}"
-            parsed = datetime.strptime(dt, "%Y-%m-%d %H:%M:%S")
-            return parsed.isoformat()
-        # try ISO parse
-        parsed = datetime.fromisoformat(s)
-        return parsed.isoformat()
-    except Exception:
-        return s
+s
 
 
 def read_exif_via_exifread(path: Path):
@@ -179,19 +131,21 @@ def is_image_file(name: str):
 def generate_manifest_for_dir(dirpath: Path):
     items = sorted(os.listdir(dirpath))
     folders = [n for n in items if (dirpath / n).is_dir()]
-    files = [n for n in items if (dirpath / n).is_file() and n != "manifest.json"]
 
     manifest = {
-        "path": str(dirpath.as_posix()),
         "folders": folders,
-        "files": files,
         "images": {},
     }
 
-    for f in files:
-        if is_image_file(f):
-            meta = extract_image_metadata(dirpath / f)
-            manifest["images"][f] = meta
+    for n in items:
+        p = dirpath / n
+        if not p.is_file():
+            continue
+        if n == "manifest.json":
+            continue
+        if is_image_file(n):
+            meta = extract_image_metadata(p)
+            manifest["images"][n] = meta
 
     return manifest
 
@@ -224,4 +178,3 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
