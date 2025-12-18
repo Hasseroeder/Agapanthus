@@ -5,7 +5,7 @@ scripts/generate_manifests.py
 Scan gallery/ and create manifest.json in every directory.
 - Lists immediate folders (excluding manifest.json).
 - For image files extracts title, description, creation_date, tags when available.
-- Supports common image formats: jpg jpeg png gif tiff tif webp
+- Supports common image formats: jpg jpeg png gif
 - Writes pretty JSON with stable ordering.
 """
 
@@ -26,7 +26,7 @@ except Exception:
     exifread = None
 
 GALLERY_DIR = Path("gallery")
-IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif", ".tiff", ".tif", ".webp"}
+IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif"}
 
 
 def normalize_date(s):
