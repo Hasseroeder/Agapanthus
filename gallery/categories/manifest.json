@@ -20,10 +20,12 @@
       "title": null
     },
     "testing.png": {
-      "creation_date": null,
-      "description": null,
-      "tags": null,
-      "title": null
+      "creation_date": "2025-12-18T18:17:00",
+      "description": "My description",
+      "tags": [
+        "Tag1, Tag2, Tag3"
+      ],
+      "title": "My title"
     }
   }
 }
