@@ -51,13 +51,16 @@ def parse_xmp_fields(xmp_xml: str) -> Tuple[Optional[str], Optional[str], Option
     def _first_from_container(el: Optional[ET.Element]) -> Optional[str]:
         if el is None:
             return None
-        # prefer rdf:li with xml:lang="x-default", otherwise first non-empty rdf:li, otherwise element text
-        lis = [ (li.text or "").strip() for li in el.findall(".//rdf:li", ns) if (li.text or "").strip() ]
-        if lis:
-            for li in el.findall(".//rdf:li", ns):
-                if (li.text or "").strip() and li.get(f"{{{ns['xml']}}}lang") == "x-default":
-                    return li.text.strip()
-            return lis[0]
+        # look for rdf:li inside Alt/Bag/Seq; prefer xml:lang="x-default"
+        for li in el.findall(f".//{{{RDF}}}li"):
+            text = (li.text or "").strip()
+            if not text:
+                continue
+            if li.get(f"{{{XML}}}lang") == "x-default":
+                return text
+            # return first non-empty if no x-default found
+            return text
+        # fallback to direct element text
         txt = (el.text or "").strip()
         return txt or None
 
