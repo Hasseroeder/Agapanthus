@@ -17,6 +17,7 @@ import re
 from pathlib import Path
 from datetime import datetime
 from xml.etree import ElementTree as ET
+from typing import Optional, List, Tuple
 
 try:
     import exifread
@@ -25,26 +26,6 @@ except Exception:
 
 GALLERY_DIR = Path("gallery")
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif"}
-
-
-def normalize_date(s):
-    if not s:
-        return None
-    s = str(s).strip()
-    try:
-        # EXIF common format "YYYY:MM:DD HH:MM:SS"
-        if ":" in s and s.count(":") >= 2 and " " in s:
-            date_part, time_part = s.split(" ", 1)
-            dp = date_part.replace(":", "-", 2)
-            dt = f"{dp} {time_part}"
-            parsed = datetime.strptime(dt, "%Y-%m-%d %H:%M:%S")
-            return parsed.isoformat()
-        # try ISO parse
-        parsed = datetime.fromisoformat(s)
-        return parsed.isoformat()
-    except Exception:
-        return s
-
 
 def read_exif_datetimeoriginal(path: Path):
     """Return EXIF DateTimeOriginal string if available (via exifread)."""
@@ -56,18 +37,13 @@ def read_exif_datetimeoriginal(path: Path):
         # exifread key for DateTimeOriginal
         if "EXIF DateTimeOriginal" in tags:
             return str(tags.get("EXIF DateTimeOriginal"))
-        # fallback common key
-        if "Image DateTime" in tags:
-            return str(tags.get("Image DateTime"))
     except Exception:
         pass
     return None
 
-
 def extract_xmp_packet(data: bytes):
     """
     Find an XMP packet in the file bytes and return it as a string.
-    XMP is usually embedded as an XML packet between <x:xmpmeta ...> ... </x:xmpmeta>.
     """
     try:
         text = data.decode("utf-8", errors="ignore")
@@ -82,100 +58,49 @@ def extract_xmp_packet(data: bytes):
     if end != -1:
         end += len("</x:xmpmeta>")
         return text[start:end]
-    # fallback: try to find rdf:RDF block
-    start_rdf = text.find("<rdf:RDF", start)
-    if start_rdf != -1:
-        end_rdf = text.find("</rdf:RDF>", start_rdf)
-        if end_rdf != -1:
-            end_rdf += len("</rdf:RDF>")
-            return text[start_rdf:end_rdf]
     return None
 
 
-def parse_xmp_fields(xmp_xml: str):
-    """
-    Parse XMP XML and extract dc:title, dc:description, dc:subject.
-    Returns (title, description, subjects_list)
-    """
+def parse_xmp_fields(xmp_xml: str) -> Tuple[Optional[str], Optional[str], Optional[List[str]]]:
     if not xmp_xml:
         return None, None, None
-    # Remove common XMP namespace prefixes to simplify parsing if needed
-    try:
-        # Ensure well-formed XML by wrapping if necessary
-        # Some XMP packets include processing instructions; ElementTree can usually handle them.
-        root = ET.fromstring(xmp_xml)
-    except Exception:
-        # Try to extract rdf:RDF block only
-        m = re.search(r"(<rdf:RDF[\s\S]*</rdf:RDF>)", xmp_xml)
-        if not m:
-            return None, None, None
-        try:
-            root = ET.fromstring(m.group(1))
-        except Exception:
-            return None, None, None
 
-    # register common namespaces
-    ns = {
-        "dc": "http://purl.org/dc/elements/1.1/",
-        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-    }
+    root = ET.fromstring(xmp_xml)
+    DC = "http://purl.org/dc/elements/1.1/"
 
-    title = None
-    description = None
+    def _text(tag: str) -> Optional[str]:
+        el = root.find(f".//{{{DC}}}{tag}")
+        return el.text.strip() if el is not None and el.text and el.text.strip() else None
+
+    title = _text("title")
+    description = _text("description")
+
     subjects = None
+    subj_el = root.find(f".//{{{DC}}}subject")
+    if subj_el is not None:
+        # prefer any child text nodes (e.g., <li> entries); fall back to a delimited string
+        children_text = [c.text.strip() for c in subj_el.findall(".//") if c.text and c.text.strip()]
+        if children_text:
+            subjects = children_text
+        else:
+            raw = subj_el.text.strip() if subj_el.text and subj_el.text.strip() else None
+            if raw:
+                subjects = [p.strip() for p in re.split(r"[;,]", raw) if p.strip()]
 
-    # dc:title -> may be rdf:Alt with rdf:li
-    for title_el in root.findall(".//{http://purl.org/dc/elements/1.1/}title"):
-        # look for rdf:Alt/rdf:li
-        li = title_el.find(".//{http://www.w3.org/1999/02/22-rdf-syntax-ns#}li")
-        if li is not None and li.text:
-            title = li.text.strip()
-            break
-        if title_el.text and title_el.text.strip():
-            title = title_el.text.strip()
-            break
+    return title, description, subjects
 
-    # dc:description -> rdf:Alt/rdf:li
-    for desc_el in root.findall(".//{http://purl.org/dc/elements/1.1/}description"):
-        li = desc_el.find(".//{http://www.w3.org/1999/02/22-rdf-syntax-ns#}li")
-        if li is not None and li.text:
-            description = li.text.strip()
-            break
-        if desc_el.text and desc_el.text.strip():
-            description = desc_el.text.strip()
-            break
-
-    # dc:subject -> rdf:Bag/rdf:li or simple list
-    for subj_el in root.findall(".//{http://purl.org/dc/elements/1.1/}subject"):
-        # look for rdf:Bag/rdf:li or rdf:Seq/rdf:li
-        lis = subj_el.findall(".//{http://www.w3.org/1999/02/22-rdf-syntax-ns#}li")
-        if lis:
-            subjects = [li.text.strip() for li in lis if li.text and li.text.strip()]
-            break
-        # sometimes subject is a simple string with separators
-        if subj_el.text and subj_el.text.strip():
-            # try splitting on semicolon or comma
-            raw = subj_el.text.strip()
-            parts = [p.strip() for p in re.split(r"[;,]", raw) if p.strip()]
-            if parts:
-                subjects = parts
-                break
-
-    return title or None, description or None, subjects or None
 
 
 def extract_minimal_metadata(path: Path):
     """
     Return dict with keys: title, description, creation_date, tags
-    Only reads the four fields requested.
     """
     title = description = creation = tags = None
 
     # EXIF DateTimeOriginal
     dt = read_exif_datetimeoriginal(path)
-    creation = normalize_date(dt) if dt else None
+    creation = dt if dt else None
 
-    # XMP parsing: read a chunk of the file (XMP is usually near start)
     try:
         with open(path, "rb") as f:
             data = f.read(200 * 1024)  # read first 200KB which should contain XMP
@@ -235,10 +160,6 @@ def generate_manifest_for_dir(dirpath: Path):
 
 
 def main():
-    if not GALLERY_DIR.exists() or not GALLERY_DIR.is_dir():
-        print("No gallery directory found. Exiting.")
-        sys.exit(0)
-
     changed = False
 
     for root, dirs, files in os.walk(GALLERY_DIR):
