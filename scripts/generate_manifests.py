@@ -45,14 +45,49 @@ def parse_xmp_fields(xmp_xml: str) -> Tuple[Optional[str], Optional[str], Option
 
     root = ET.fromstring(xmp_xml)
     DC = "http://purl.org/dc/elements/1.1/"
+    RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    XML = "http://www.w3.org/XML/1998/namespace"
+
+    # ns = {"dc": DC, "rdf": RDF, "xml": XML}
+
+    def _extract_text_from_rdf_container(parent_el: Optional[ET.Element]) -> Optional[str]:
+        """
+        Handles rdf:Alt / rdf:Bag / rdf:Seq containers and returns a single string.
+        Prefers xml:lang="x-default" if present, otherwise first rdf:li text.
+        """
+        if parent_el is None:
+            return None
+
+        # look for rdf:Alt / rdf:Bag / rdf:Seq
+        for container_tag in (f"{{{RDF}}}Alt", f"{{{RDF}}}Bag", f"{{{RDF}}}Seq"):
+            container = parent_el.find(f".//{container_tag}")
+            if container is not None:
+                # prefer x-default
+                xdefault = None
+                first = None
+                for li in container.findall(f".//{{{RDF}}}li"):
+                    text = li.text.strip() if li.text and li.text.strip() else None
+                    if not text:
+                        continue
+                    lang = li.get(f"{{{XML}}}lang")
+                    if lang == "x-default":
+                        return text
+                    if first is None:
+                        first = text
+                return first
+
+        # if no container, maybe direct text on the element
+        if parent_el.text and parent_el.text.strip():
+            return parent_el.text.strip()
+        return None
 
     def _text(tag: str) -> Optional[str]:
+        # find the dc:tag element (may be nested under rdf:Description or similar)
         el = root.find(f".//{{{DC}}}{tag}")
-        return el.text.strip() if el is not None and el.text and el.text.strip() else None
+        return _extract_text_from_rdf_container(el)
 
     title = _text("title")
     description = _text("description")
-    date_val = _text("date")
 
     # dc:subject
     subjects = None
@@ -65,6 +100,16 @@ def parse_xmp_fields(xmp_xml: str) -> Tuple[Optional[str], Optional[str], Option
             raw = subj_el.text.strip() if subj_el.text and subj_el.text.strip() else None
             if raw:
                 subjects = [p.strip() for p in re.split(r"[;,]", raw) if p.strip()]
+
+    # dc:date
+    date_val = None
+    date_el = root.find(f".//{{{DC}}}date")
+    if date_el is not None:
+        children_text = [c.text.strip() for c in date_el.findall(".//") if c.text and c.text.strip()]
+        if children_text:
+            date_val = children_text[0]  # take first date
+        elif date_el.text and date_el.text.strip():
+            date_val = date_el.text.strip()
 
     return title, description, subjects, date_val
 
