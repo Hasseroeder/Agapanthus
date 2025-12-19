@@ -1,13 +1,6 @@
 #!/usr/bin/env python3
 """
 scripts/generate_manifests_minimal.py
-
-Scan gallery/ and create manifest.json in every directory.
-Only extracts these fields:
-- Exif.Photo.DateTimeOriginal -> creation_date
-- Xmp.dc.title -> title
-- Xmp.dc.description -> description
-- Xmp.dc.subject -> tags (list)
 """
 
 import os
@@ -26,20 +19,6 @@ except Exception:
 
 GALLERY_DIR = Path("gallery")
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif"}
-
-def read_exif_datetimeoriginal(path: Path):
-    """Return EXIF DateTimeOriginal string if available (via exifread)."""
-    if exifread is None:
-        return None
-    try:
-        with open(path, "rb") as f:
-            tags = exifread.process_file(f, details=False)
-        # exifread key for DateTimeOriginal
-        if "EXIF DateTimeOriginal" in tags:
-            return str(tags.get("EXIF DateTimeOriginal"))
-    except Exception:
-        pass
-    return None
 
 def extract_xmp_packet(data: bytes):
     """
@@ -60,10 +39,9 @@ def extract_xmp_packet(data: bytes):
         return text[start:end]
     return None
 
-
-def parse_xmp_fields(xmp_xml: str) -> Tuple[Optional[str], Optional[str], Optional[List[str]]]:
+def parse_xmp_fields(xmp_xml: str) -> Tuple[Optional[str], Optional[str], Optional[List[str]], Optional[str]]:
     if not xmp_xml:
-        return None, None, None
+        return None, None, None, None
 
     root = ET.fromstring(xmp_xml)
     DC = "http://purl.org/dc/elements/1.1/"
@@ -75,10 +53,10 @@ def parse_xmp_fields(xmp_xml: str) -> Tuple[Optional[str], Optional[str], Option
     title = _text("title")
     description = _text("description")
 
+    # dc:subject
     subjects = None
     subj_el = root.find(f".//{{{DC}}}subject")
     if subj_el is not None:
-        # prefer any child text nodes (e.g., <li> entries); fall back to a delimited string
         children_text = [c.text.strip() for c in subj_el.findall(".//") if c.text and c.text.strip()]
         if children_text:
             subjects = children_text
@@ -87,9 +65,17 @@ def parse_xmp_fields(xmp_xml: str) -> Tuple[Optional[str], Optional[str], Option
             if raw:
                 subjects = [p.strip() for p in re.split(r"[;,]", raw) if p.strip()]
 
-    return title, description, subjects
+    # dc:date
+    date_val = None
+    date_el = root.find(f".//{{{DC}}}date")
+    if date_el is not None:
+        children_text = [c.text.strip() for c in date_el.findall(".//") if c.text and c.text.strip()]
+        if children_text:
+            date_val = children_text[0]  # take first date
+        elif date_el.text and date_el.text.strip():
+            date_val = date_el.text.strip()
 
-
+    return title, description, subjects, date_val
 
 def extract_minimal_metadata(path: Path):
     """
@@ -97,30 +83,26 @@ def extract_minimal_metadata(path: Path):
     """
     title = description = creation = tags = None
 
-    # EXIF DateTimeOriginal
-    dt = read_exif_datetimeoriginal(path)
-    creation = dt if dt else None
-
     try:
         with open(path, "rb") as f:
-            data = f.read(200 * 1024)  # read first 200KB which should contain XMP
+            data = f.read(200 * 1024)
     except Exception:
         data = b""
 
     xmp_packet = extract_xmp_packet(data)
     if xmp_packet:
-        t, d, s = parse_xmp_fields(xmp_packet)
+        t, d, s, date_val = parse_xmp_fields(xmp_packet)
         if t:
             title = t
         if d:
             description = d
         if s:
             tags = s
+        if date_val:
+            creation = date_val
 
     # normalize empty strings to None
     def norm(x):
-        if x is None:
-            return None
         if isinstance(x, str) and x.strip() == "":
             return None
         return x
@@ -131,7 +113,6 @@ def extract_minimal_metadata(path: Path):
         "creation_date": norm(creation),
         "tags": tags or None,
     }
-
 
 def is_image_file(name: str):
     return Path(name).suffix.lower() in IMAGE_EXTS
