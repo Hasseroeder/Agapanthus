@@ -8,7 +8,6 @@ import json
 import sys
 import re
 from pathlib import Path
-from datetime import datetime
 from xml.etree import ElementTree as ET
 from typing import Optional, List, Tuple
 
@@ -160,6 +159,7 @@ def main():
 
     for root, dirs, files in os.walk(GALLERY_DIR):
         dirpath = Path(root)
+        print("VISITING:", root)
         manifest = generate_manifest_for_dir(dirpath)
         manifest_path = dirpath / "manifest.json"
         new_content = json.dumps(manifest, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
