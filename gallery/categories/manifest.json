@@ -1,5 +1,7 @@
 {
-  "folders": [],
+  "folders": [
+    "specials"
+  ],
   "images": {
     "2024may_flower.png": {
       "creation_date": "2024-05",
