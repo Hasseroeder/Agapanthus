@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-scripts/generate_manifests_minimal.py
+scripts/generate_manifests.py
 """
 
 import os
@@ -171,6 +171,8 @@ def main():
         else:
             manifest_path.write_text(new_content, encoding="utf-8")
             changed = True
+
+        print("new content:", new_content)
 
     if changed:
         print("Manifests updated.")
