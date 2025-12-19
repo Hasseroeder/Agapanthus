@@ -213,13 +213,7 @@ def is_image_file(name: str):
 
 
 def generate_manifest_for_dir(dirpath: Path):
-    # ensure dirpath is a Path
-    dirpath = Path(dirpath)
-    try:
-        items = sorted(os.listdir(dirpath))
-    except Exception:
-        items = []
-
+    items = sorted(os.listdir(dirpath))
     folders = [n for n in items if (dirpath / n).is_dir()]
 
     manifest = {
@@ -241,25 +235,25 @@ def generate_manifest_for_dir(dirpath: Path):
 
 
 def main():
+    if not GALLERY_DIR.exists() or not GALLERY_DIR.is_dir():
+        print("No gallery directory found. Exiting.")
+        sys.exit(0)
+
     changed = False
 
-    # Walk the entire tree under GALLERY_DIR and create/update manifest.json in every directory.
-    for dirpath, dirnames, filenames in os.walk(GALLERY_DIR, followlinks=False):
-        dirpath = Path(dirpath)
+    for root, dirs, files in os.walk(GALLERY_DIR):
+        dirpath = Path(root)
         manifest = generate_manifest_for_dir(dirpath)
         manifest_path = dirpath / "manifest.json"
         new_content = json.dumps(manifest, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
-        try:
-            if manifest_path.exists():
-                old = manifest_path.read_text(encoding="utf-8")
-                if old != new_content:
-                    manifest_path.write_text(new_content, encoding="utf-8")
-                    changed = True
-            else:
+        if manifest_path.exists():
+            old = manifest_path.read_text(encoding="utf-8")
+            if old != new_content:
                 manifest_path.write_text(new_content, encoding="utf-8")
                 changed = True
-        except Exception as e:
-            print(f"Failed to write manifest for {dirpath}: {e}", file=sys.stderr)
+        else:
+            manifest_path.write_text(new_content, encoding="utf-8")
+            changed = True
 
     if changed:
         print("Manifests updated.")
