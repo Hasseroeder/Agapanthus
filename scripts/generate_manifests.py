@@ -16,7 +16,7 @@ try:
 except Exception:
     exifread = None
 
-GALLERY_DIR = Path("gallery")
+IMAGE_DIR = Path("gallery/categories")
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif"}
 
 def extract_xmp_packet(data: bytes):
@@ -157,7 +157,7 @@ def generate_manifest_for_dir(dirpath: Path):
 def main():
     changed = False
 
-    for root, dirs, files in os.walk(GALLERY_DIR):
+    for root, dirs, files in os.walk(IMAGE_DIR):
         dirpath = Path(root)
         print("VISITING:", root)
         manifest = generate_manifest_for_dir(dirpath)
