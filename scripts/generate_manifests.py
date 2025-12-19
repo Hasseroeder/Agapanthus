@@ -48,70 +48,49 @@ def parse_xmp_fields(xmp_xml: str) -> Tuple[Optional[str], Optional[str], Option
     RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     XML = "http://www.w3.org/XML/1998/namespace"
 
-    # ns = {"dc": DC, "rdf": RDF, "xml": XML}
-
-    def _extract_text_from_rdf_container(parent_el: Optional[ET.Element]) -> Optional[str]:
-        """
-        Handles rdf:Alt / rdf:Bag / rdf:Seq containers and returns a single string.
-        Prefers xml:lang="x-default" if present, otherwise first rdf:li text.
-        """
-        if parent_el is None:
+    def _first_from_container(el: Optional[ET.Element]) -> Optional[str]:
+        if el is None:
             return None
-
-        # look for rdf:Alt / rdf:Bag / rdf:Seq
-        for container_tag in (f"{{{RDF}}}Alt", f"{{{RDF}}}Bag", f"{{{RDF}}}Seq"):
-            container = parent_el.find(f".//{container_tag}")
-            if container is not None:
-                # prefer x-default
-                xdefault = None
-                first = None
-                for li in container.findall(f".//{{{RDF}}}li"):
-                    text = li.text.strip() if li.text and li.text.strip() else None
-                    if not text:
-                        continue
-                    lang = li.get(f"{{{XML}}}lang")
-                    if lang == "x-default":
-                        return text
-                    if first is None:
-                        first = text
-                return first
-
-        # if no container, maybe direct text on the element
-        if parent_el.text and parent_el.text.strip():
-            return parent_el.text.strip()
-        return None
+        # look for rdf:li inside Alt/Bag/Seq; prefer xml:lang="x-default"
+        for li in el.findall(f".//{{{RDF}}}li"):
+            text = (li.text or "").strip()
+            if not text:
+                continue
+            if li.get(f"{{{XML}}}lang") == "x-default":
+                return text
+            # return first non-empty if no x-default found
+            return text
+        # fallback to direct element text
+        txt = (el.text or "").strip()
+        return txt or None
 
     def _text(tag: str) -> Optional[str]:
-        # find the dc:tag element (may be nested under rdf:Description or similar)
-        el = root.find(f".//{{{DC}}}{tag}")
-        return _extract_text_from_rdf_container(el)
+        return _first_from_container(root.find(f".//{{{DC}}}{tag}"))
 
     title = _text("title")
     description = _text("description")
 
-    # dc:subject
+    # subjects: prefer rdf:li list, otherwise split plain text by ; or ,
     subjects = None
     subj_el = root.find(f".//{{{DC}}}subject")
     if subj_el is not None:
-        children_text = [c.text.strip() for c in subj_el.findall(".//") if c.text and c.text.strip()]
-        if children_text:
-            subjects = children_text
+        lis = [ (li.text or "").strip() for li in subj_el.findall(f".//{{{RDF}}}li") if (li.text or "").strip() ]
+        if lis:
+            subjects = lis
         else:
-            raw = subj_el.text.strip() if subj_el.text and subj_el.text.strip() else None
+            raw = (subj_el.text or "").strip()
             if raw:
                 subjects = [p.strip() for p in re.split(r"[;,]", raw) if p.strip()]
 
-    # dc:date
+    # date: take first child text or element text
     date_val = None
     date_el = root.find(f".//{{{DC}}}date")
     if date_el is not None:
-        children_text = [c.text.strip() for c in date_el.findall(".//") if c.text and c.text.strip()]
-        if children_text:
-            date_val = children_text[0]  # take first date
-        elif date_el.text and date_el.text.strip():
-            date_val = date_el.text.strip()
+        children = [ (c.text or "").strip() for c in date_el.findall(".//") if (c.text or "").strip() ]
+        date_val = children[0] if children else ((date_el.text or "").strip() or None)
 
     return title, description, subjects, date_val
+
 
 def extract_minimal_metadata(path: Path):
     """
