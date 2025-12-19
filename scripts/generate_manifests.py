@@ -52,6 +52,7 @@ def parse_xmp_fields(xmp_xml: str) -> Tuple[Optional[str], Optional[str], Option
 
     title = _text("title")
     description = _text("description")
+    date_val = _text("date")
 
     # dc:subject
     subjects = None
@@ -64,16 +65,6 @@ def parse_xmp_fields(xmp_xml: str) -> Tuple[Optional[str], Optional[str], Option
             raw = subj_el.text.strip() if subj_el.text and subj_el.text.strip() else None
             if raw:
                 subjects = [p.strip() for p in re.split(r"[;,]", raw) if p.strip()]
-
-    # dc:date
-    date_val = None
-    date_el = root.find(f".//{{{DC}}}date")
-    if date_el is not None:
-        children_text = [c.text.strip() for c in date_el.findall(".//") if c.text and c.text.strip()]
-        if children_text:
-            date_val = children_text[0]  # take first date
-        elif date_el.text and date_el.text.strip():
-            date_val = date_el.text.strip()
 
     return title, description, subjects, date_val
 
