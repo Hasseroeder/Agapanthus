@@ -1,14 +1,20 @@
 {
   "folders": [],
   "images": {
+    "2024june_pastel.png": {
+      "creation_date": null,
+      "description": null,
+      "tags": null,
+      "title": null
+    },
     "2024may_flower.png": {
       "creation_date": "2024-05",
-      "description": "April showers bring May flowers.\\nArt drawn by @hsse\\nHoliday pet created on May 2024 Holidays",
+      "description": "\"April Showers bring May flowers.\"\\n Art drawn by @hsse\\n Holiday pet created on May 2024 Holidays!",
       "tags": [
         "pixelart",
         "special"
       ],
-      "title": "Mayflower"
+      "title": "2024may_flower"
     }
   }
 }
