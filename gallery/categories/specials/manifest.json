@@ -1,11 +1,17 @@
 {
   "folders": [],
   "images": {
-    "2024june_pastel.png": {
-      "creation_date": null,
-      "description": null,
+    "2024aug_cait.png": {
+      "creation_date": "2024-08",
+      "description": "\"Legend has it that witches could transform into cats...\"\\n Art drawn by @hsse\\n Holiday pet created on August 2024 Holidays!",
       "tags": null,
-      "title": null
+      "title": "2024aug_cait"
+    },
+    "2024june_pastel.png": {
+      "creation_date": "2024-06",
+      "description": "\"Life is too short to pretend to be someone you're not.\"\\n Art drawn by @hsse\\n Holiday pet created on June 2024 Holidays!",
+      "tags": null,
+      "title": "2024june_pastel"
     },
     "2024may_flower.png": {
       "creation_date": "2024-05",
@@ -15,6 +21,12 @@
         "special"
       ],
       "title": "2024may_flower"
+    },
+    "2025june_lavender.png": {
+      "creation_date": "2025-06",
+      "description": "Lavender stands\\n\\n Where cracked earth yields,\\n where dust takes flight,\\n through purple fields,\\n in golden light.\\n\\n Where wind unravels names,\\n where silence sways like grass,\\n and musing claims,\\n shattered glass.\\n\\n 💛 🤍 💜 🖤\\n\\n Art drawn by Heather\\n Holiday pet created to celebrate June 2025",
+      "tags": null,
+      "title": "2025june_lavender"
     }
   }
 }
