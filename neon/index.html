@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test</title>
+        <link href="../css/main.css" rel="stylesheet" type="text/css" media="all">
+        <link href="/neon/css.css" rel="stylesheet" type="text/css" media="all">
+    </head>
+    <body>
+        <div class="center-pillar">
+            <div id="navbar"></div>
+            <div style="margin:1rem 4rem; gap:1rem; display:flex; flex-direction: column;">
+                <div style="padding: 2rem; background-color: #333; display:flex;">
+                    <div style="display:flex; flex-direction: column; justify-content: center;">
+                        <p>input your Neon export here:</p>
+                        <input type="file" id="input" accept=".json">
+                    </div>
+                    <div>
+                        <label style="display:flex; gap:1rem; align-items: center;">
+                            <p>Items per Page</p>
+                            <input style="height:1rem; width:5rem;" id="pageSize" type="number" value="100">
+                        </label>
+                        <label style="display:flex; gap:1rem; align-items: center;">
+                            <p>Page</p>
+                            <input style="height:1rem; width:5rem; margin-left: auto;" id="page" type="number" value="1">
+                        </label>
+                    </div>
+                </div>
+                <div style="padding: 2rem; background-color: #333;">
+                    <table id="weaponTable">
+
+                    </table>
+                </div>
+            </div>
+        </div>
+        <script type="module" src="../js/init.js"></script>
+        <script type="module" src="/neon/neon.js"></script>
+    </body>
+</html>
