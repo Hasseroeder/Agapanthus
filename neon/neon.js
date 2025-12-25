@@ -1,5 +1,6 @@
 import { make } from "../js/util/injectionUtil.js";
 import { loadJson } from "../js/util/jsonUtil.js"
+import { capitalizeFirstLetter } from "../js/util/stringUtil.js"
 
 const input = document.getElementById("input");
 const page = document.getElementById("page");
@@ -54,12 +55,9 @@ function getViewData() {
     // 3. PAGINATION
     const [p, ps] = [parseInt(page.value), parseInt(pageSize.value)]
 
-    const start = (p - 1) * ps;
-    const end = start + ps;
-
     return {
         total: result.length,
-        pageData: result.slice(start, end)
+        pageData: result.slice((p-1)*ps, p*ps)
     };
 }
 
@@ -79,9 +77,11 @@ function createTable(array) {
     array.forEach(w => {
         const row = table.insertRow();
 
-        row.insertCell().textContent = w.id;
-        row.insertCell().textContent = w.t;
-        row.insertCell().textContent = w.q;
+        const IDcell = row.insertCell();
+        IDcell.append(make("code",{className:"id-code", textContent: w.id}));
+
+        row.insertCell().textContent = 100 + w.t + " - " + capitalizeFirstLetter(weapons[w.t]);
+        row.insertCell().textContent = w.q + "%";
         row.insertCell().textContent = w.bp;
 
         const passiveText = w.p

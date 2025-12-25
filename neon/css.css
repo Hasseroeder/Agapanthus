@@ -2,3 +2,11 @@ p {
     font-family: monospace;
     margin: 0;
 }
+
+.id-code {
+    font-family: monospace;
+    margin: 0 1rem;
+    padding: 0.075rem 0.2rem;
+    background-color: #222;
+    border-radius: 0.3rem;
+}
