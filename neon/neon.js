@@ -84,10 +84,17 @@ function createTable(array) {
         row.insertCell().textContent = w.q + "%";
         row.insertCell().textContent = w.bp;
 
-        const passiveText = w.p
-            .map(p => `type ${p.t}, tier ${p.r}`)
-            .join(" | ");
+        const passiveCell = row.insertCell();
+        w.p.forEach(p=>
+            passiveCell.append(
+            make("img", {
+                src:"../neon/media/passives/"+tiers[p.r].letter+"_"+passives[p.t]+".png",
+                style:"height:1.2rem"
+            })
+        ));
 
-        row.insertCell().textContent = passiveText;
+        const passiveText = w.p
+            .map(p => tiers[p.r].name + " " + capitalizeFirstLetter(passives[p.t]))
+            .join(" | ");
     });
 }

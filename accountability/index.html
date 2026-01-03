@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test</title>
+        <link href="../css/main.css" rel="stylesheet" type="text/css" media="all">
+        <link href="../accountability/css.css" rel="stylesheet" type="text/css" media="all">
+    </head>
+    <body>
+        <div class="center-pillar">
+            <div id="navbar"></div>
+            <div style="margin: 2rem 6rem; display: flex;">
+                <div style="width: 50%; padding-right: 2rem;">
+                    <div style="display:flex; gap: 1rem; justify-content: center;">
+                        <button id="prev-date">&lt;&lt;</button>
+                        <span id="current-date-label" style="min-width: 12rem; text-align: center;"></span>
+                        <button id="next-date">&gt;&gt;</button>
+                    </div>
+
+                    <div>
+                        <div style="display:flex;">
+                            <div style="width:50%; padding-right: 1rem">
+                                <p class="header">Morning Plans</p>
+                                <p class="text-field" id="morning-plans">none</p>
+                            </div>
+                            <div style="width: 50%;">
+                                <p class="header">Evening Plans</p>
+                                <p class="text-field" id="evening-plans">none</p>
+                            </div>
+                        </div>
+                        <div style="display:flex;">
+                            <div style="width:50%; padding-right: 1rem;">
+                                <p>Therapy</p>
+                                <p id="therapy">none</p>
+                            </div>
+                            <div style="width: 50%;">
+                                <p>Work</p>
+                                <p id="work">none</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <p style="margin:0">Current Projects</p>
+                    <ul class="bigger-list">
+                        <li>
+                            Work 
+                            <ul class="smaller-list">
+                                <li>Make money so i can visit Freya....</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Self Actualization
+                            <ul class="smaller-list">
+                                <li>Therapy</li>
+                                <li>Weekly injections</li>
+                                <li>Get my bloodwork done.</li>
+                                <li>Get into contact with a gender specialist.</li>
+                                <li>Get into contact with an endocrinologist</li>
+                                <li>Speech training</li>
+                                <li>Come out to more people
+                                    <ul>
+                                        <li style="margin-left: -1.5rem;">Top priority: figure out mom..</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            Agapanthus
+                            <ul class="smaller-list">
+                                <li>Complete this TODO page.</li>
+                                <li>Create a page to house all my artwork. And then painstakingly upload everything...</li>
+                                <li>Create a weapon.json viewer for Freya. If this tool becomes good enough, it might end up on Basement.</li>
+                                <li>Make this whole site PRETTY. I'm thinking pastel...</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Basement
+                            <ul class="smaller-list">
+                                <li>Fix the pet calculator's pet stats. This used to work in the past, so it should be a simple fix.</li>
+                                <li>Complete what I started on the weapon calculator.</li>
+                                <li style="list-style-type: none; margin-left:-1rem; margin-top: 0.5rem;">Following are on hold until I figure out how battles work in the new update</li>
+                                <li class="inactive">Battle System</li>
+                                <li class="inactive">Deepdives on teams</li>
+                                <li class="inactive">Deepdives on all passives</li>
+                                <li class="inactive">Deepdives on all weapons</li>
+                                <li class="inactive">Log Viewer - might end up abandoned</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Art
+                            <ul class="smaller-list">
+                                <span style="font-size: 0.65rem; color:gray;">#Writing</span>
+                                <li>My DnD dm probably hates me, I should write a backstory.</li>
+                                <li>Write poem for Freya.</li>
+                                <li style="margin-bottom: 0.65rem;">Continue Roleplaying in OBBE</li>
+
+                                <span style="font-size: 0.65rem; color:gray;">#Drawing</span>
+                                <li>Continue my daily mouse project</li>
+                                <li>Draw the present I promised Freya</li>
+                                <li>Look into signing up for OwO-Specials next year.</li>
+                                <li>Draw a banner for Agapanthus</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <script type="module" src="../js/init.js"></script>
+        <script type="module" src="../accountability/main.js"></script>
+    </body>
+</html>

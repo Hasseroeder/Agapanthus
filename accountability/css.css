@@ -1,0 +1,31 @@
+.smaller-list{
+    font-size: 0.8rem;
+    padding-left: 1rem;
+}
+
+.smaller-list li{
+    margin-top: 0.2rem;
+}
+
+.inactive {
+    text-decoration:line-through;
+}
+
+.bigger-list > li:not(:last-child){
+    margin-bottom: 1.5rem;
+}
+
+button {
+    border:none;
+    border-radius: 0;
+    flex: auto;
+}
+
+.text-field {
+    font-size: 0.9rem;
+    margin-top: -0.4rem;
+}
+
+.header {
+    text-decoration: underline;
+}
