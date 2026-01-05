@@ -41,13 +41,13 @@ async function show(){
 		});
 
 		pieceWrapper.append(
-			make("h3", { textContent: title }),
 			make("img", {
 				src: `../gallery/categories/${currentCategory}/${key}`,
 				style: { width: "50%" },
 				alt: title
 			}),
-			make("p",{innerHTML:description})
+			make("h3", { textContent: title }),
+			make("p",{ innerHTML:description })
 		);
 		wrapper.append(pieceWrapper);
 	}
