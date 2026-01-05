@@ -1,6 +1,5 @@
 {
-  "folders": [
-    "specials"
-  ],
-  "images": {}
+  "specials": {
+    "type": "folder"
+  }
 }

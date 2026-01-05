@@ -1,19 +1,24 @@
 {
-  "folders": [],
-  "images": {
-    "2024aug_cait.png": {
+  "2024aug_cait.png": {
+    "meta": {
       "creation_date": "2024-08",
       "description": "\"Legend has it that witches could transform into cats...\"\\n Art drawn by @hsse\\n Holiday pet created on August 2024 Holidays!",
       "tags": null,
       "title": "2024aug_cait"
     },
-    "2024june_pastel.png": {
+    "type": "image"
+  },
+  "2024june_pastel.png": {
+    "meta": {
       "creation_date": "2024-06",
       "description": "\"Life is too short to pretend to be someone you're not.\"\\n Art drawn by @hsse\\n Holiday pet created on June 2024 Holidays!",
       "tags": null,
       "title": "2024june_pastel"
     },
-    "2024may_flower.png": {
+    "type": "image"
+  },
+  "2024may_flower.png": {
+    "meta": {
       "creation_date": "2024-05",
       "description": "\"April Showers bring May flowers.\"\\n Art drawn by @hsse\\n Holiday pet created on May 2024 Holidays!",
       "tags": [
@@ -22,29 +27,42 @@
       ],
       "title": "2024may_flower"
     },
-    "2025june_lavender.png": {
+    "type": "image"
+  },
+  "2025june_lavender.png": {
+    "meta": {
       "creation_date": "2025-06",
       "description": "Lavender stands\\n\\n Where cracked earth yields,\\n where dust takes flight,\\n through purple fields,\\n in golden light.\\n\\n Where wind unravels names,\\n where silence sways like grass,\\n and musing claims,\\n shattered glass.\\n\\n 💛 🤍 💜 🖤\\n\\n Art drawn by Heather\\n Holiday pet created to celebrate June 2025",
       "tags": null,
       "title": "2025june_lavender"
     },
-    "2025june_primrose.png": {
+    "type": "image"
+  },
+  "2025june_primrose.png": {
+    "meta": {
       "creation_date": "2025-06",
       "description": "Primrose bends by thawing snows,\\n though often unseen, in spaces between.\\n 💛 💜 💛\\n\\n Art drawn by Heather\\n Holiday pet created to celebrate June 2025!\\n",
       "tags": null,
       "title": "2025june_primrose"
     },
-    "2025nov_fastsnail.gif": {
+    "type": "image"
+  },
+  "2025nov_fastsnail.gif": {
+    "meta": {
       "creation_date": "2025-11",
       "description": null,
       "tags": null,
       "title": "2025nov_fastsnail"
     },
-    "2025nov_gsnail.gif": {
+    "type": "image"
+  },
+  "2025nov_gsnail.gif": {
+    "meta": {
       "creation_date": "2025-11",
       "description": "Glass shatters so easily,\\n dancing in rainbow colors,\\n light appearing like a kaleidoscope.\\n\\n We're broken,\\n beautifully, like shards.\\n\\n Art drawn by Heather\\n Holiday pet created to celebrate November 2025!",
       "tags": null,
       "title": "2025nov_gsnail"
-    }
+    },
+    "type": "image"
   }
 }
