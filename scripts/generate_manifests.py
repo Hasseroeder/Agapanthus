@@ -131,26 +131,14 @@ def extract_minimal_metadata(path: Path):
 def is_image_file(name: str):
     return Path(name).suffix.lower() in IMAGE_EXTS
 
-
 def generate_manifest_for_dir(dirpath: Path):
-    items = sorted(os.listdir(dirpath))
-    folders = [n for n in items if (dirpath / n).is_dir()]
-
-    manifest = {
-        "folders": folders,
-        "images": {},
-    }
-
-    for n in items:
-        p = dirpath / n
-        if not p.is_file():
-            continue
-        if n == "manifest.json":
-            continue
-        if is_image_file(n):
-            meta = extract_minimal_metadata(p)
-            manifest["images"][n] = meta
-
+    manifest = {}
+    for name in sorted(os.listdir(dirpath)):
+        path = dirpath / name
+        if path.is_dir():
+            manifest[name] = {"type": "folder"}
+        elif path.is_file() and is_image_file(name):
+            manifest[name] = {"type": "image", "meta": extract_minimal_metadata(path)}
     return manifest
 
 

@@ -30,25 +30,24 @@ function updateUI() {
     els.work.textContent = row.Work || "none";
 }
 
-els.prev_date.addEventListener("click", () => {
-    if (currentIndex > 0) {
-        currentIndex--;
-        updateUI();
-    }
-});
+els.prev_date.addEventListener("click", () => changeIndex(-1));
+els.next_date.addEventListener("click", () => changeIndex(1));
 
-els.next_date.addEventListener("click", () => {
-    if (currentIndex < data.length - 1) {
-        currentIndex++;
-        updateUI();
-    }
-});
+function changeIndex(value){
+    currentIndex += value;
+    currentIndex = Math.max(currentIndex, 0);
+    currentIndex = Math.min(currentIndex, data.length-1);
+    updateUI();
+}
 
 updateUI();
-  /*
-    Data Structure:
+/*
+Data Structure:
     [
-        {"Date": "2025-01-16", "Day": "Friday", "Evening_Plans": "-", "Morning_Plans": "-", "Therapy": "Single 9:00-10:00", "Work": "13:00-21:30"},
-        "Date": "2025-01-17", "Day": "Saturday", "Evening_Plans": "-", "Morning_Plans": "-", "Therapy": "-", "Work": "-"}
+        {
+            "Date": "2025-01-16", "Day": "Friday", "Evening_Plans": "-", "Morning_Plans": "-", "Therapy": "Single 9:00-10:00", "Work": "13:00-21:30"
+        },{
+            "Date": "2025-01-17", "Day": "Saturday", "Evening_Plans": "-", "Morning_Plans": "-", "Therapy": "-", "Work": "-"
+        }
     ]
-  */
+*/

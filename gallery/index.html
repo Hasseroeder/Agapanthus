@@ -3,16 +3,28 @@
     <head>
         <title>Test</title>
         <link href="../css/main.css" rel="stylesheet" type="text/css" media="all">
+        <link href="css.css" rel="stylesheet" type="text/css" media="all">
     </head>
     <body>
         <div class="center-pillar">
             <div id="navbar"></div>
             <div style="margin:4rem">
-                <h1>Hello!</h1>
-                <p>This will be my gallery page</p>
-
-                <select id="categories"></select>
-                <div id="artWrapper"></div>
+                <div style="display:flex; justify-content: center;  gap: 1rem;">
+                    <button>&lt;&lt;</button>
+                    <select id="categories"></select>
+                    <button>&gt;&gt;</button>
+                </div>
+                <div style="display:grid; grid-template-columns: auto auto;"id="artWrapper">
+                    <div>Hello</div>
+                    <div>Hello</div>
+                    <div>Hello</div>
+                    <div>Hello</div>
+                    <div>Hello</div>
+                    <div>Hello</div>
+                    <div>Hello</div>
+                    <div>Hello</div>
+                    
+                </div>
             </div>
         </div>
         <script type="module" src="../js/init.js"></script>
