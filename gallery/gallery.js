@@ -39,8 +39,6 @@ async function show(){
 				alignItems: "center"
 			}
 		});
-		const desc = document.createElement("p");
-		desc.innerHTML = "\"Life is too short to pretend to be someone you're not.\"\\n Art drawn by @hsse\\n Holiday pet created on June 2024 Holidays!"
 
 		pieceWrapper.append(
 			make("h3", { textContent: title }),
@@ -49,7 +47,7 @@ async function show(){
 				style: { width: "50%" },
 				alt: title
 			}),
-			desc
+			make("p",{innerHTML:description})
 		);
 		wrapper.append(pieceWrapper);
 	}
