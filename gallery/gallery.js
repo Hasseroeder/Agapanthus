@@ -32,13 +32,7 @@ async function show(){
   	// Render in sorted order
 	for (const { key, data } of entries) {
 		const { creation_date, title, description } = data.meta;
-		const pieceWrapper = make("div", {
-			style: {
-				display: "flex",
-				flexDirection: "column",
-				alignItems: "center"
-			}
-		});
+		const pieceWrapper = make("div", {className:"piece-wrapper"});
 
 		pieceWrapper.append(
 			make("img", {
@@ -46,7 +40,7 @@ async function show(){
 				style: { width: "50%" },
 				alt: title
 			}),
-			make("h3", { textContent: title }),
+			make("h3", { className:"image-title", textContent: title }),
 			make("p",{ innerHTML:description })
 		);
 		wrapper.append(pieceWrapper);
