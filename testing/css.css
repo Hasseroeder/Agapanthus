@@ -1,0 +1,11 @@
+.result-box{
+    display:flex;
+    gap: 0.5rem;
+    align-items: center;
+    font-size: 0.7rem;
+    padding:0.2rem;
+}
+
+.clock{
+    font-size: 1.5rem;
+}

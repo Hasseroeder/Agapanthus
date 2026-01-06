@@ -137,10 +137,9 @@ def generate_manifest_for_dir(dirpath: Path):
         path = dirpath / name
         if path.is_dir():
             manifest[name] = {"type": "folder"}
-        elif path.is_file() and is_image_file(name):
+        elif is_image_file(name):
             manifest[name] = {"type": "image", "meta": extract_minimal_metadata(path)}
     return manifest
-
 
 def main():
     changed = False
