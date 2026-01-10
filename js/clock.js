@@ -106,7 +106,7 @@ function hideClock() {
     clock.textContent = ""; 
 }
 
-export function init(outerWrapper){
+export async function init(outerWrapper){
     wrapper     = outerWrapper.getElementById("timeWrapper");
     searchInput = outerWrapper.getElementById("timezoneSearch");
     clock       = outerWrapper.getElementById("outputClock");

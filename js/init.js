@@ -14,7 +14,7 @@ const injectors = [
   	},
 	{
 		selector: ".center-pillar",
-		load: () => {
+		load: async () => {
 			const blinkies = [
 				{file:"blinkiesCafe-7m.gif" ,href:"https://blinkies.cafe/"},
 				{file:"blinkiesCafe-ji.gif" ,href:"https://blinkies.cafe/"},
@@ -50,7 +50,7 @@ const injectors = [
 				a.append(img); 
 				wrapper.append(a);    
 			});
-			return Promise.resolve(wrapper);
+			return wrapper;
 		},
 	}
 ];
