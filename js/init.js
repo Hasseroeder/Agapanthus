@@ -1,13 +1,15 @@
 import { make } from "./util/injectionUtil.js";
-import * as cookieUtil from "./util/cookieUtil.js"
+import * as clock from "./clock.js";
+import * as cookieUtil from "./util/cookieUtil.js";
 
 const injectors = [
   	{
 		selector: "#navbar",
-		load: () => {
-			return fetch("../donatorPages/navBar.html")
-				.then(r => r.text())
-				.then(async html => document.createRange().createContextualFragment(html));
+		load: async () => {
+			const html = await fetch("../donatorPages/navBar.html").then(r => r.text());
+			const el = document.createRange().createContextualFragment(html);
+			clock.init(el);
+			return el;
 		},
   	},
 	{
@@ -62,26 +64,18 @@ function fourRandoms(myArray){
   	return myArray.slice(0, count);
 }
 
-function initInjectors() {
-  	injectors.forEach(({ selector, load }) => {
-		const el = document.querySelector(selector);
-		if (!el) return;
-		load().then(child => el.append(child));
-  	});
-}
-
-window.addEventListener("DOMContentLoaded", initInjectors);
-
-cookieStore.addEventListener('change', () => {
-  	checkForTBH();
-});
-
+cookieStore.addEventListener('change', checkForTBH);
 checkForTBH();
 
 function checkForTBH(){
-	if (cookieUtil.getCookie("tbh")=="true"){
-		document.body.classList.add("tbh");
-	}else{
-		document.body.classList.remove('tbh');
-	}
+	document.body.classList.toggle(
+		"tbh",
+		cookieUtil.getCookie("tbh")=="true"
+	)
 }
+
+injectors.forEach(({ selector, load }) => {
+	const el = document.querySelector(selector);
+	if (!el) return;
+	load().then(child => el.append(child));
+});
