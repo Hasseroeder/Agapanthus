@@ -74,10 +74,16 @@ function checkForTBH(){
 	)
 }
 
-document.addEventListener("DOMContentLoaded",()=>{
+if (document.readyState === 'loading'){
+	document.addEventListener("DOMContentLoaded", initInjectors);
+}else{
+	initInjectors();
+}
+
+function initInjectors(){
 	injectors.forEach(({ selector, load }) => {
 		const el = document.querySelector(selector);
 		if (!el) return;
 		load().then(child => el.append(child));
 	});
-})
+}
