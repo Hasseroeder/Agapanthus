@@ -32,7 +32,8 @@ function handleInput(){
 
             // Fallback to alphabetical
             return aCity.localeCompare(bCity);
-        });
+        })
+        .slice(0,4);
 
     renderList();
 }
@@ -54,7 +55,7 @@ function renderList() {
     wrapper.innerHTML = "";
     const date = new Date();
 
-    filteredList.slice(0, 4).forEach((item, idx) => {
+    filteredList.forEach((item, idx) => {
         const dateParams = { timeZone: item.timezone, ...clockFormatting}
         const box = make("div", {
             className: "result-box",
@@ -119,7 +120,7 @@ export async function init(outerWrapper){
     searchInput.addEventListener("input", handleInput);
     searchInput.addEventListener("blur", showClock);
     searchInput.addEventListener("keydown", (e) => {
-        const list = filteredList; // store this globally when you filter
+        const list = filteredList;
 
         if (!list || list.length === 0) return;
 
