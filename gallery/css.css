@@ -19,4 +19,6 @@ button {
     flex-direction: column;
     align-items: center;
     padding: 2rem;
+    outline: 9px outset #222;
+    margin: 2rem;
 }
