@@ -166,3 +166,14 @@ body {
 .output-clock * {
     width: 100%;
 }
+
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: url('https://media.discordapp.net/attachments/1162291678091169842/1460028260401545399/IMG_9443.png?ex=69656cc7&is=69641b47&hm=d111eee5e1729b67dd64a06382fb7f13447c676265fc3a010abfebbe2c4fbcb9&=&format=webp&quality=lossless');
+  background-size: 2%;
+  background-position: center;
+  pointer-events: none;
+  opacity: 100%;
+}
