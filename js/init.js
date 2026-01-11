@@ -64,7 +64,9 @@ function fourRandoms(myArray){
   	return myArray.slice(0, count);
 }
 
-cookieStore.addEventListener('change', checkForTBH);
+if ('cookieStore' in window && cookieStore.addEventListener) {
+  cookieStore.addEventListener('change', checkForTBH);
+}
 checkForTBH();
 
 function checkForTBH(){
