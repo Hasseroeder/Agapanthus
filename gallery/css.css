@@ -50,7 +50,7 @@
 
 /*change the number below to scale to the appropriate size*/ 
 .enlarge:hover { 
-    transform: scale(1.45); 
+    transform: scale(1.4); 
 }
 
 #artWrapper {
