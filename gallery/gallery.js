@@ -1,21 +1,40 @@
 import {loadJson} from "../js/util/jsonUtil.js"
 import {make} from "../js/util/injectionUtil.js"
 
-const select = document.getElementById("categories")
+const inputWrapper = document.querySelector(".button-wrapper");
+const [prevButton,select,nextButton] = inputWrapper.children;
 const wrapper = document.getElementById("artWrapper");
 
 const categories  = await loadJson("../gallery/categories/manifest.json").then(res => Object.keys(res));
 // categories = ["pixelart", "traditional art"]
-categories.forEach(category => 
+categories.forEach((category,i) => 
 	select.add(
-		make("option",{text:category, value:category})
+		make("option",{text:category, value:i})
 	)
 );
 
+var currentIndex = 0;
+
+select.addEventListener("change",()=>{
+		currentIndex = select.value;
+		show();
+});
+prevButton.addEventListener("click",()=>{
+		currentIndex--;
+		if (currentIndex<0) currentIndex = categories.length-1;
+		show();
+});
+nextButton.addEventListener("click",()=>{
+		currentIndex++;
+		if (currentIndex==categories.length) currentIndex = 0;
+		show();
+});
+
 async function show(){
 	wrapper.innerHTML = "";
-	const currentCategory = select.value;
-	const currentManifest = await loadJson(`../gallery/categories/${currentCategory}/manifest.json`);
+	select.text  = categories[currentIndex];
+	select.value = currentIndex;
+	const currentManifest = await loadJson(`categories/${categories[currentIndex]}/manifest.json`);
 
   	// Convert manifest object into array of [key, data]
 	const entries = Object.entries(currentManifest)
@@ -37,7 +56,7 @@ async function show(){
 
 		pieceWrapper.append(
 			make("img", {
-				src: `../gallery/categories/${currentCategory}/${key}`,
+				src: `../gallery/categories/${categories[currentIndex]}/${key}`,
 				className: "piece-image",
 				alt: title
 			}),
