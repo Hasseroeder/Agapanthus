@@ -31,8 +31,7 @@ async function show(){
 
   	// Render in sorted order
 	for (const { key, data } of entries) {
-		var { title, creation_date, description } = data.meta;
-		if (title == "") title = key;
+		var { title = key, creation_date, description } = data.meta;
 		const pieceWrapper = make("div", {className:"piece-wrapper"});
 
 		pieceWrapper.append(
