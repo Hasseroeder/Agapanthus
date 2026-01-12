@@ -25,6 +25,13 @@
 
 .piece-image{
     width:55%;
+    -webkit-transition-property: all; 
+    -webkit-transition-duration: 0.15s; 
+    -webkit-transition-timing-function: ease; 
+}
+
+.piece-image:hover { 
+    transform: scale(1.39); 
 }
 
 .piece-wrapper{
@@ -34,23 +41,6 @@
     padding: 1.5rem;
     outline: 9px outset #222;
     margin: 1.5rem;
-}
-
-.enlarge { 
-    display:block; 
-    z-index:999; 
-    cursor: pointer; 
-    transition-property:all;
-    -webkit-transition-property: all; 
-    transition-duration:0.15s;
-    -webkit-transition-duration: 0.15s; 
-    transition-timing-function: ease;
-    -webkit-transition-timing-function: ease; 
-} 
-
-/*change the number below to scale to the appropriate size*/ 
-.enlarge:hover { 
-    transform: scale(1.39); 
 }
 
 #artWrapper {

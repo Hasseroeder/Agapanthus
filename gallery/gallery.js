@@ -37,7 +37,7 @@ async function show(){
 		pieceWrapper.append(
 			make("img", {
 				src: `../gallery/categories/${currentCategory}/${key}`,
-				className: "piece-image enlarge",
+				className: "piece-image",
 				alt: title
 			}),
 			make("h3", { className:"image-title", textContent: title }),
@@ -46,6 +46,5 @@ async function show(){
 		wrapper.append(pieceWrapper);
 	}
 }
-
 
 show();
