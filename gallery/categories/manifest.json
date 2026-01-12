@@ -1,4 +1,7 @@
 {
+  "ascii-art": {
+    "type": "folder"
+  },
   "specials": {
     "type": "folder"
   }
