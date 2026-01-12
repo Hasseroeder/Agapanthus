@@ -1,9 +1,22 @@
-select {
+.button-wrapper select {
     min-width: 10rem;
 }
 
-button {
+.button-wrapper button {
     min-width: 3rem;
+}
+
+.button-wrapper button,select {
+    background-color: #333;
+    border: none;
+    border-bottom: solid 2px #8b7e9b;
+    color: lightgray;
+    border-radius: 1.5px;
+    min-height: 1.5rem;
+}
+
+.button-wrapper button:hover,select:hover {
+    background-color: #555555;
 }
 
 .image-title{
@@ -21,4 +34,34 @@ button {
     padding: 1.5rem;
     outline: 9px outset #222;
     margin: 1.5rem;
+}
+
+.enlarge { 
+    display:block; 
+    z-index:999; 
+    cursor: pointer; 
+    transition-property:all;
+    -webkit-transition-property: all; 
+    transition-duration:0.15s;
+    -webkit-transition-duration: 0.15s; 
+    transition-timing-function: ease;
+    -webkit-transition-timing-function: ease; 
+} 
+
+/*change the number below to scale to the appropriate size*/ 
+.enlarge:hover { 
+    transform: scale(1.45); 
+}
+
+#artWrapper {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    margin: 2rem;
+}
+
+.button-wrapper {
+    display:flex; 
+    justify-content: center;  
+    gap: 1rem;
+    margin-top:4rem;
 }

@@ -82,6 +82,7 @@ input, textarea, code, [contenteditable] {
     margin-left:2.5rem;
     margin-right:2.5rem;
     border-bottom: solid 2px #8b7e9b;
+    border-radius: 1.5px;
 }
 
 .toolbar a {
@@ -89,6 +90,7 @@ input, textarea, code, [contenteditable] {
     padding: 0.5rem;
     text-decoration: none;
     margin: 0 5px;
+    border-radius: 2px;
 }
 
 .toolbar a:hover{
