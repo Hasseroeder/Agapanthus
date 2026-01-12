@@ -25,9 +25,7 @@
 
 .piece-image{
     width:55%;
-    -webkit-transition-property: all; 
     -webkit-transition-duration: 0.15s; 
-    -webkit-transition-timing-function: ease; 
 }
 
 .piece-image:hover { 
