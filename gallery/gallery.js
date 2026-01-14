@@ -74,7 +74,7 @@ function render(){
 		});
 
 	categoryArray.forEach(image => {
-		image.el = make("img", {className: "piece-image"});
+		image.el = make("img", {className: "piece-image", loading:"lazy"});
 		image.idx = 0;
 
 		const pieceChildren = image.filenames.length==1
@@ -97,14 +97,6 @@ function render(){
 render();
 
 // prefetch
-/*requestIdleCallback(() => {
-	ImageArray.forEach(image => {
-		image.filenames.forEach(filename=>{
-			const img = new Image();
-			img.src = "../gallery/images/"+filename;
-		})
-	});
-});*/
 requestIdleCallback(function idlePrefetch(deadline){
 	const BATCH = 3;
 	while (deadline.timeRemaining() > 0 && ImageArray.length) {
