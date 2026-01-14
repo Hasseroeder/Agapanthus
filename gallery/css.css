@@ -53,3 +53,18 @@
     gap: 1rem;
     margin-top:4rem;
 }
+
+.many-image-wrapper {
+    display: flex;
+    justify-content: center;
+    gap:1rem;
+    width: 100%;
+}
+
+.many-image-wrapper button {
+    min-width: 2rem;
+}
+
+.many-image-wrapper .piece-image {
+    width: 62.5%;
+}

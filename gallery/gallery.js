@@ -11,41 +11,45 @@ const URL = [
 	"Sheet1"
 ].join("/");
 
-var categories = [];
 const ImageArray  = await loadJson(URL);
 
-ImageArray.forEach(image => {
-	if (!categories.includes(image.category))
-		categories.push(image.category);
-});
+const categories = {
+    array: [...new Set(ImageArray.map(i => i.category))],
+    _idx: 0,
 
-categories.forEach((category,i) => 
+    get idx() { return this._idx },
+    set idx(value) {
+        const len = this.array.length;
+        this._idx = ((value % len) + len) % len; // wrap
+		show();
+	},
+
+    get current() { return this.array[this.idx] },
+    set current(categoryName) {
+        const i = this.array.indexOf(categoryName);
+        if (i !== -1) this.idx = i;				// ignore invalid inputs
+		show();
+    }
+};
+
+categories.array.forEach(category => 
 	select.add(
-		make("option",{text:category, value:i})
+		make("option",{text:category, value:category})
 	)
 );
 
-var currentIndex = 0;
-
-select.addEventListener("change",()=>changeIndex(+select.value));
-prevButton.addEventListener("click",()=>changeIndex(currentIndex-1));
-nextButton.addEventListener("click",()=>changeIndex(currentIndex+1));
-
-function changeIndex(num){
-	currentIndex = num;
-	if (currentIndex<0) currentIndex = categories.length-1;
-	else if (currentIndex==categories.length) currentIndex = 0;
-	show();
-}
+select.addEventListener("change",	()=> categories.current=select.value );
+prevButton.addEventListener("click",()=> categories.idx--);
+nextButton.addEventListener("click",()=> categories.idx++);
 
 async function show(){
 	wrapper.innerHTML = "";
-	select.text  = categories[currentIndex];
-	select.value = currentIndex;
+	select.text  = categories.current;
+	select.value = categories.current;
 
-	const categoryArray = ImageArray.filter(image => image.category == categories[currentIndex]);
+	const categoryArray = ImageArray.filter(image => image.category == categories.current);
 
-  	// Parse creation_date and sort ascending (oldest → newest).
+  	// Parse creationDate and sort ascending (oldest → newest).
 	categoryArray.sort((a, b) => {
 		const da = new Date(a.creationDate).getTime();
 		const db = new Date(b.creationDate).getTime();
@@ -54,18 +58,51 @@ async function show(){
 
   	// Render in sorted order
 	categoryArray.forEach(image => {
-		const { title, creationDate, description, filename } = image;
+		const { title, creationDate, description } = image;
+		const filenames = image.filenames.split(",").map(name=>name.trim());
 		const pieceWrapper = make("div", {className:"piece-wrapper"});
+		var imageIndex = 0;
 
-		pieceWrapper.append(
-			make("img", {
-				src: `../gallery/images/${filename}`,
-				className: "piece-image",
-				alt: filename
-			}),
-			make("h3", { className:"image-title", textContent: title }),
-			make("p",{ innerHTML:description })
-		);
+		const imageElement = make("img", {
+			src: "../gallery/images/" + filenames[imageIndex],
+			className: "piece-image",
+			alt: filenames[imageIndex]
+		});
+
+		if (filenames.length==1){
+			pieceWrapper.append(
+				make("div",{className:"many-image-wrapper"},[
+					imageElement
+				]),
+				make("h3", { className:"image-title", textContent: title }),
+				make("p",{ innerHTML:description })
+			);
+		}
+		else {
+			var imageIndex = 0;
+
+			const prevImgButton = make("button", {onclick: ()=>{
+				imageIndex--;
+				imageElement.src = "../gallery/images/" + filenames[imageIndex]
+				imageElement.alt = filenames[imageIndex]; 
+			}});
+			const nextImgButton = make("button", {onclick: ()=>{
+				imageIndex++;
+				imageElement.src = "../gallery/images/" + filenames[imageIndex]
+				imageElement.alt = filenames[imageIndex]; 
+			}});
+
+			pieceWrapper.append(
+				make("div",{className:"many-image-wrapper"},[
+					prevImgButton,
+					imageElement,
+					nextImgButton
+				]),
+				make("h3", { className:"image-title", textContent: title }),
+				make("p",{ innerHTML:description })
+			);
+		}
+
 		wrapper.append(pieceWrapper);
 	});
 }
