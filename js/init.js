@@ -33,7 +33,9 @@ const injectors = [
 			myBlinkies.forEach(blinkie => {
 				const img = make("img",{
 					src:"../media/blinkies/" + blinkie.file,
-					className:"blinkie"
+					className:"blinkie",
+					loading: "lazy", 
+					decoding: "async",
 				});
 				const a = make("a",{
 					style:"display:block; flex: 1 1 0;",
@@ -77,12 +79,6 @@ function checkForTBH(){
 }
 
 initInjectors();
-
-/*if (document.readyState === 'loading'){
-	document.addEventListener("DOMContentLoaded", initInjectors);
-}else{
-	initInjectors();
-}*/
 
 function initInjectors(){
 	injectors.forEach(({ selector, load }) => {
