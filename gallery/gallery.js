@@ -21,15 +21,21 @@ const categories = {
     set idx(value) {
         const len = this.array.length;
         this._idx = ((value % len) + len) % len; // wrap
-		show();
+		_syncUI();
 	},
 
     get current() { return this.array[this.idx] },
     set current(categoryName) {
         const i = this.array.indexOf(categoryName);
         if (i !== -1) this.idx = i;				// ignore invalid inputs
-		show();
-    }
+		_syncUI();
+    },
+
+	_syncUI() {
+		select.text  = this.current;
+		select.value = this.current;
+		render();
+	}
 };
 
 categories.array.forEach(category => 
@@ -42,19 +48,15 @@ select.addEventListener("change",	()=> categories.current=select.value );
 prevButton.addEventListener("click",()=> categories.idx--);
 nextButton.addEventListener("click",()=> categories.idx++);
 
-async function show(){
+function render(){
 	wrapper.innerHTML = "";
-	select.text  = categories.current;
-	select.value = categories.current;
-
-	const categoryArray = ImageArray.filter(image => image.category == categories.current);
-
-  	// Parse creationDate and sort ascending (oldest → newest).
-	categoryArray.sort((a, b) => {
-		const da = new Date(a.creationDate).getTime();
-		const db = new Date(b.creationDate).getTime();
-		return da - db; // use db - da for newest → oldest
-	});
+	const categoryArray = ImageArray
+		.filter(image => image.category == categories.current)
+		.sort((a, b) => {
+			const da = new Date(a.creationDate).getTime();
+			const db = new Date(b.creationDate).getTime();
+			return da - db;
+		});
 
   	// Render in sorted order
 	categoryArray.forEach(image => {
@@ -107,4 +109,4 @@ async function show(){
 	});
 }
 
-show();
+render();
