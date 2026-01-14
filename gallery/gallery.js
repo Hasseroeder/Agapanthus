@@ -95,3 +95,12 @@ function render(){
 }
 
 render();
+
+requestIdleCallback(() => {
+	ImageArray.forEach(image => {
+		image.filenames.forEach(filename=>{
+			const img = new Image();
+			img.src = filename;
+		})
+	});
+});
