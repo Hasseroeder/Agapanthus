@@ -110,5 +110,5 @@ window.addEventListener("load", () => {
                 requestIdleCallback(idlePrefetch);
             }
         });
-    }, 1000);
+    }, 500);
 });
