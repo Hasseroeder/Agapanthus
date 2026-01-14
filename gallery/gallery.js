@@ -96,10 +96,10 @@ function render(){
 
 render();
 
+// prefetch
 requestIdleCallback(() => {
 	ImageArray.forEach(image => {
 		image.filenames.forEach(filename=>{
-			console.log("trying to fetch: ../gallery/images/"+filename)
 			const img = new Image();
 			img.src = "../gallery/images/"+filename;
 		})
