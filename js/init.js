@@ -76,11 +76,13 @@ function checkForTBH(){
 	)
 }
 
-if (document.readyState === 'loading'){
+initInjectors();
+
+/*if (document.readyState === 'loading'){
 	document.addEventListener("DOMContentLoaded", initInjectors);
 }else{
 	initInjectors();
-}
+}*/
 
 function initInjectors(){
 	injectors.forEach(({ selector, load }) => {
