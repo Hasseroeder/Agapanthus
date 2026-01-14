@@ -70,6 +70,10 @@
     border-radius: 3px;
 }
 
+.many-image-wrapper button:hover {
+    background-color: #555555;
+}
+
 .many-image-wrapper .piece-image {
     width: 62.5%;
 }
