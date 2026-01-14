@@ -21,14 +21,14 @@ const categories = {
     set idx(value) {
         const len = this.array.length;
         this._idx = ((value % len) + len) % len; // wrap
-		_syncUI();
+		this._syncUI();
 	},
 
     get current() { return this.array[this.idx] },
     set current(categoryName) {
         const i = this.array.indexOf(categoryName);
         if (i !== -1) this.idx = i;				// ignore invalid inputs
-		_syncUI();
+		this._syncUI();
     },
 
 	_syncUI() {
@@ -60,51 +60,36 @@ function render(){
 
   	// Render in sorted order
 	categoryArray.forEach(image => {
-		const { title, creationDate, description } = image;
 		const filenames = image.filenames.split(",").map(name=>name.trim());
-		const pieceWrapper = make("div", {className:"piece-wrapper"});
-		var imageIndex = 0;
+		const imageElement = make("img", {className: "piece-image"});
 
-		const imageElement = make("img", {
-			src: "../gallery/images/" + filenames[imageIndex],
-			className: "piece-image",
-			alt: filenames[imageIndex]
+		image._idx;
+		Object.defineProperty(image, 'idx', {
+			configurable: true,
+			get() { return this._idx },
+			set(value) {
+				const len = filenames.length;
+				this._idx = ((value % len) + len) % len;
+				
+				imageElement.src = "../gallery/images/" + filenames[this._idx]
+				imageElement.alt = filenames[this._idx]; 
+			}
 		});
+		image.idx = 0;
 
-		if (filenames.length==1){
-			pieceWrapper.append(
-				make("div",{className:"many-image-wrapper"},[
-					imageElement
-				]),
-				make("h3", { className:"image-title", textContent: title }),
-				make("p",{ innerHTML:description })
-			);
-		}
-		else {
-			var imageIndex = 0;
+		const pieceChildren = filenames.length==1
+			? [imageElement]
+			: [
+				make("button", { textContent:"<<", onclick: ()=>image.idx--}), 
+				imageElement, 
+				make("button", { textContent:">>", onclick: ()=>image.idx++})
+			];
 
-			const prevImgButton = make("button", {onclick: ()=>{
-				imageIndex--;
-				imageElement.src = "../gallery/images/" + filenames[imageIndex]
-				imageElement.alt = filenames[imageIndex]; 
-			}});
-			const nextImgButton = make("button", {onclick: ()=>{
-				imageIndex++;
-				imageElement.src = "../gallery/images/" + filenames[imageIndex]
-				imageElement.alt = filenames[imageIndex]; 
-			}});
-
-			pieceWrapper.append(
-				make("div",{className:"many-image-wrapper"},[
-					prevImgButton,
-					imageElement,
-					nextImgButton
-				]),
-				make("h3", { className:"image-title", textContent: title }),
-				make("p",{ innerHTML:description })
-			);
-		}
-
+		const pieceWrapper = make("div", {className:"piece-wrapper"},[
+			make("div",{className:"many-image-wrapper"},pieceChildren),
+			make("h3", { className:"image-title", textContent: image.title }),
+			make("p",{ innerHTML: image.description })
+		]);
 		wrapper.append(pieceWrapper);
 	});
 }

@@ -63,6 +63,11 @@
 
 .many-image-wrapper button {
     min-width: 2rem;
+    background-color: #333;
+    border: none;
+    border-bottom: solid 2px #8b7e9b;
+    color: lightgray;
+    border-radius: 3px;
 }
 
 .many-image-wrapper .piece-image {
