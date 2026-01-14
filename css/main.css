@@ -178,3 +178,11 @@ body {
   background-size: 7%;
   pointer-events: none;
 }
+
+a {
+    color: #6d97c0; 
+}
+
+a:hover {
+    color: #70b7cf;
+}
