@@ -97,11 +97,23 @@ function render(){
 render();
 
 // prefetch
-requestIdleCallback(() => {
+/*requestIdleCallback(() => {
 	ImageArray.forEach(image => {
 		image.filenames.forEach(filename=>{
 			const img = new Image();
 			img.src = "../gallery/images/"+filename;
 		})
 	});
+});*/
+requestIdleCallback(function idlePrefetch(deadline){
+	const BATCH = 3;
+	while (deadline.timeRemaining() > 0 && ImageArray.length) {
+		const image = ImageArray.shift();
+		image.filenames.slice(0, BATCH).forEach(fn=>{
+			const img = new Image();
+			img.decoding = 'async';
+			img.src = "../gallery/images/"+fn;
+		});
+		if (ImageArray.length) break; // leave remaining for next idle slot
+	}
 });
