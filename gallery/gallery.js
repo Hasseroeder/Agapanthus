@@ -91,16 +91,20 @@ function render(){
 render();
 
 // prefetch
-const arrayClone = JSON.parse(JSON.stringify(ImageArray))
+const arrayClone = JSON.parse(JSON.stringify(ImageArray));
+
 requestIdleCallback(function idlePrefetch(deadline){
-	const BATCH = 3;
-	while (deadline.timeRemaining() > 0 && arrayClone.length) {
-		const image = arrayClone.shift();
-		image.filenames.slice(0, BATCH).forEach(fn=>{
-			const img = new Image();
-			img.decoding = 'async';
-			img.src = "../gallery/images/"+fn;
-		});
-		if (arrayClone.length) break; // leave remaining for next idle slot
-	}
+    const BATCH = 3;
+    while (deadline.timeRemaining() > 0 && arrayClone.length) {
+        const image = arrayClone.shift();
+        image.filenames.slice(0, BATCH).forEach(fn => {
+            const img = new Image();
+            img.decoding = 'async';
+            img.src = "../gallery/images/" + fn;
+        });
+    }
+
+    if (arrayClone.length) {
+        requestIdleCallback(idlePrefetch);
+    }
 });
