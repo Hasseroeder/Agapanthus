@@ -11,7 +11,22 @@ const URL = [
 	"Sheet1"
 ].join("/");
 
-const ImageArray  = await loadJson(URL);
+const ImageArray  = (await loadJson(URL)).map(image=>{
+	image._idx;
+	image.filenames = image.filenames.split(",").map(name=>name.trim());
+	Object.defineProperty(image, 'idx', {
+		configurable: true,
+		get() { return this._idx },
+		set(value) {
+			const len = image.filenames.length;
+			this._idx = ((value % len) + len) % len;
+			
+			image.el.src = "../gallery/images/" + image.filenames[this._idx]
+			image.el.alt = image.filenames[this._idx]; 
+		}
+	});
+	return image;
+});
 
 const categories = {
     array: [...new Set(ImageArray.map(i => i.category))],
@@ -58,37 +73,22 @@ function render(){
 			return da - db;
 		});
 
-  	// Render in sorted order
 	categoryArray.forEach(image => {
-		const filenames = image.filenames.split(",").map(name=>name.trim());
-		const imageElement = make("img", {className: "piece-image"});
-
-		image._idx;
-		Object.defineProperty(image, 'idx', {
-			configurable: true,
-			get() { return this._idx },
-			set(value) {
-				const len = filenames.length;
-				this._idx = ((value % len) + len) % len;
-				
-				imageElement.src = "../gallery/images/" + filenames[this._idx]
-				imageElement.alt = filenames[this._idx]; 
-			}
-		});
+		image.el = make("img", {className: "piece-image"});
 		image.idx = 0;
 
-		const pieceChildren = filenames.length==1
-			? [imageElement]
+		const pieceChildren = image.filenames.length==1
+			? [image.el]
 			: [
 				make("button", { textContent:"<<", onclick: ()=>image.idx--}), 
-				imageElement, 
+				image.el, 
 				make("button", { textContent:">>", onclick: ()=>image.idx++})
 			];
 
 		const pieceWrapper = make("div", {className:"piece-wrapper"},[
 			make("div",{className:"many-image-wrapper"},pieceChildren),
-			make("h3", { className:"image-title", textContent: image.title }),
-			make("p",{ innerHTML: image.description })
+			make("h3", {className:"image-title", textContent: image.title}),
+			make("p",{innerHTML: image.description})
 		]);
 		wrapper.append(pieceWrapper);
 	});
