@@ -91,8 +91,8 @@ function render(){
 render();
 
 // prefetch
-window.addEventListener("load", () => {
-    setTimeout(() => {
+function prefetch(){
+	setTimeout(() => {
         const arrayClone = JSON.parse(JSON.stringify(ImageArray));
 
         requestIdleCallback(function idlePrefetch(deadline){
@@ -111,4 +111,9 @@ window.addEventListener("load", () => {
             }
         });
     }, 500);
-});
+}
+
+if (document.readyState == "loading") 
+	document.addEventListener("DOMContentLoaded", prefetch);
+else
+	prefetch();
