@@ -1,17 +1,11 @@
-import {loadJson} from "../js/util/jsonUtil.js"
 import {make} from "../js/util/injectionUtil.js"
+import * as csv from "/js/util/csvUtil.js"
 
 const inputWrapper = document.querySelector(".button-wrapper");
 const [prevButton,select,nextButton] = inputWrapper.children;
 const wrapper = document.getElementById("artWrapper");
 
-const URL = [
-	"https://opensheet.elk.sh",
-	"1r_v31yc0E_cZmXlfYO8iFPYet_qYKwQU5t_sBBoTpRQ",
-	"Sheet1"
-].join("/");
-
-const ImageArray  = (await loadJson(URL)).map(image=>{
+const ImageArray  = (await csv.load("/media/csv/galleryImages.csv")).map(image=>{
 	image._idx;
 	image.filenames = image.filenames.split(",").map(name=>name.trim());
 	Object.defineProperty(image, 'idx', {
@@ -72,7 +66,7 @@ function render(){
 			const db = new Date(b.creationDate).getTime();
 			return da - db;
 		});
-
+	
 	categoryArray.forEach(image => {
 		image.el = make("img", {className: "piece-image"});
 		image.idx = 0;
@@ -97,15 +91,16 @@ function render(){
 render();
 
 // prefetch
+const arrayClone = JSON.parse(JSON.stringify(ImageArray))
 requestIdleCallback(function idlePrefetch(deadline){
 	const BATCH = 3;
-	while (deadline.timeRemaining() > 0 && ImageArray.length) {
-		const image = ImageArray.shift();
+	while (deadline.timeRemaining() > 0 && arrayClone.length) {
+		const image = arrayClone.shift();
 		image.filenames.slice(0, BATCH).forEach(fn=>{
 			const img = new Image();
 			img.decoding = 'async';
 			img.src = "../gallery/images/"+fn;
 		});
-		if (ImageArray.length) break; // leave remaining for next idle slot
+		if (arrayClone.length) break; // leave remaining for next idle slot
 	}
 });
