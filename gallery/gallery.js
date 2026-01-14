@@ -74,7 +74,7 @@ function render(){
 		});
 
 	categoryArray.forEach(image => {
-		image.el = make("img", {className: "piece-image", loading:"lazy"});
+		image.el = make("img", {className: "piece-image"});
 		image.idx = 0;
 
 		const pieceChildren = image.filenames.length==1
