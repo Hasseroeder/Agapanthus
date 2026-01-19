@@ -6,7 +6,7 @@
     min-width: 3rem;
 }
 
-.button-wrapper button,select {
+.button-wrapper button, .button-wrapper select {
     background-color: #333;
     border: none;
     border-bottom: solid 2px #8b7e9b;
@@ -15,7 +15,7 @@
     min-height: 1.5rem;
 }
 
-.button-wrapper button:hover,select:hover {
+.button-wrapper button:hover, .button-wrapper select:hover {
     background-color: #555555;
 }
 

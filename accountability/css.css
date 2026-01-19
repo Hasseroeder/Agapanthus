@@ -7,18 +7,21 @@
     margin-top: 0.2rem;
 }
 
+.smallest-list li{
+    margin-left: -1.5rem;
+}
+
+.sub-header{
+    font-size: 0.65rem; 
+    color:gray;
+}
+
 .inactive {
     text-decoration:line-through;
 }
 
 .bigger-list > li:not(:last-child){
     margin-bottom: 1.5rem;
-}
-
-button {
-    border:none;
-    border-radius: 0;
-    flex: auto;
 }
 
 .text-field {
@@ -28,4 +31,30 @@ button {
 
 .header {
     text-decoration: underline;
+}
+
+.button-wrapper {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.button-wrapper button, .button-wrapper span {
+    background-color: #333;
+    border: none;
+    border-bottom: solid 2px #8b7e9b;
+    color: lightgray;
+    border-radius: 1.5px;
+    min-height: 1.5rem;
+    min-width: 4rem;
+}
+
+.button-wrapper button:hover {
+    background-color: #555555;
+}
+
+#current-date-label {
+    min-width: 12rem; 
+    text-align: center;
+    line-height: 1.5rem;
 }
