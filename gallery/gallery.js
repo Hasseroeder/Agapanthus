@@ -53,6 +53,9 @@ categories.array.forEach(category =>
 	)
 );
 
+categories.current = window.location.hash.slice(1);
+console.log(window.location.hash);
+
 select.addEventListener("change",	()=> categories.current=select.value );
 prevButton.addEventListener("click",()=> categories.idx--);
 nextButton.addEventListener("click",()=> categories.idx++);
