@@ -41,6 +41,7 @@ const categories = {
     },
 
 	_syncUI() {
+		window.location.hash = this.current; 
 		select.text  = this.current;
 		select.value = this.current;
 		render();
