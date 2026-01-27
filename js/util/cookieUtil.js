@@ -2,9 +2,9 @@ function setCookie(name,value,daysToLive){
     const date= new Date();
     date.setDate(date.getDate() + daysToLive*24*60*60*1000);
 
-    let expires = "expires="+date.toUTCString();
-    document.cookie=`${name}=${value}; ${expires};`;
-
+    const expires = "expires="+date.toUTCString();
+    const root = "path=/"
+    document.cookie=`${name}=${value}; ${expires}; ${root};`;
 }
 
 function deleteCookie(name){

@@ -48,7 +48,8 @@ const injectors = [
 						cookieUtil.getCookie(blinkie.cookie) !== "true", 
 						30
 					);
-
+				
+				console.log(a);
 				a.append(img); 
 				wrapper.append(a);    
 			});
@@ -67,7 +68,7 @@ function fourRandoms(myArray){
 }
 
 if ('cookieStore' in window && cookieStore.addEventListener) {
-  cookieStore.addEventListener('change', checkForTBH);
+  	cookieStore.addEventListener('change', checkForTBH);
 }
 checkForTBH();
 
