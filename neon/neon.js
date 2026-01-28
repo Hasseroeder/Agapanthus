@@ -13,7 +13,9 @@ const table = document.getElementById("weaponTable");
 const reader = new FileReader();
 reader.onload = () => {
     try {
-        state.data = JSON.parse(reader.result);
+        const text = reader.result;
+        const sanitized = text.replace(/[\u0000-\u0019]+/g, "");
+        state.data = JSON.parse(sanitized);
         render();
     } catch (err) {
         console.error(err);
