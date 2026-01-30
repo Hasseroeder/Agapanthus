@@ -71,13 +71,14 @@ function render() {
 function clampFromData(data){
     const ps = Math.max(parseInt(pageSize.value) || 100, 1);
     const p = Math.max(parseInt(page.value) || 1, 1);
-    const maxPage = Math.max(1, Math.ceil(data.length / ps));
+    const max_p = Math.max(1, Math.ceil(data.length / ps));
+    const new_p = Math.min(p, max_p)
 
     pageSize.value = ps;
-    page.value = Math.min(p, maxPage);
-    page.max = maxPage;
+    page.value = new_p;
+    page.max = max_p;
 
-    return {p:parseInt(page.value), ps}
+    return {p:new_p, ps}
 }
 
 function createTable(array) {
