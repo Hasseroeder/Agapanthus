@@ -4,11 +4,11 @@ import * as cookieUtil from "./util/cookieUtil.js";
 
 const data = await loadJson("../media/json/timezone-list.json");
 var wrapper, searchInput, clock;
-const clockFormatting = { hour12: false, hour: "2-digit", minute: "2-digit" }
 let selectedIndex = 0; 
 let clockInterval = null;
 let filteredList = [];
 
+const clockFormatting = { hour12: false, hour: "2-digit", minute: "2-digit" }
 const defaultClockData = { city: "Berlin", timezone: "Europe/Berlin" };
 let clockData = {
     ...defaultClockData,
@@ -105,8 +105,8 @@ function showClock() {
 }
 
 function setClockText(){
-    const clockParams = { timeZone: clockData.timezone, ...clockFormatting };
-    clock.textContent = new Date().toLocaleTimeString("en-US", clockParams) +" "+ clockData.city;
+    const dateParams = { timeZone: clockData.timezone, ...clockFormatting };
+    clock.textContent = new Date().toLocaleTimeString("en-US", dateParams) +" "+ clockData.city;
 }
 
 function hideClock() { 
