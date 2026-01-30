@@ -49,7 +49,6 @@ const injectors = [
 						30
 					);
 				
-				console.log(a);
 				a.append(img); 
 				wrapper.append(a);    
 			});
