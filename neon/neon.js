@@ -55,7 +55,7 @@ function getViewData() {
     }
 
     // 3. PAGINATION
-    const [p, ps] = [parseInt(page.value), parseInt(pageSize.value)]
+    const {p,ps} = clampFromData(result);
 
     return {
         total: result.length,
@@ -66,6 +66,18 @@ function getViewData() {
 function render() {
     const { pageData } = getViewData();
     createTable(pageData);
+}
+
+function clampFromData(data){
+    const ps = parseInt(pageSize.value) || 100;
+    const p = parseInt(page.value) || 1;
+    const maxPage = Math.max(1, Math.ceil(data.length / ps));
+
+    pageSize.value = ps;
+    page.value = Math.min(Math.max(p, 1), maxPage);
+    page.max = maxPage;
+
+    return {p:parseInt(page.value), ps}
 }
 
 function createTable(array) {
