@@ -1,5 +1,6 @@
 import {loadJson} from "./util/jsonUtil.js"
 import {make} from "./util/injectionUtil.js"
+import * as cookieUtil from "./util/cookieUtil.js";
 
 const data = await loadJson("../media/json/timezone-list.json");
 var wrapper, searchInput, clock;
@@ -7,9 +8,11 @@ const clockFormatting = { hour12: false, hour: "2-digit", minute: "2-digit" }
 let selectedIndex = 0; 
 let clockInterval = null;
 let filteredList = [];
+
+const defaultClockData = { city: "Berlin", timezone: "Europe/Berlin" };
 let clockData = {
-    "city": "Berlin",
-    "timezone": "Europe/Berlin"
+    ...defaultClockData,
+    ...(JSON.parse(cookieUtil.getCookie("clockData") || "{}"))
 };
 
 function handleInput(){
@@ -94,6 +97,11 @@ function showClock() {
     clockInterval = setInterval(setClockText, 1000);
     setClockText();
     exitSelect();
+    cookieUtil.setCookie(
+        "clockData", 
+        JSON.stringify(clockData),
+        30
+    );
 }
 
 function setClockText(){
