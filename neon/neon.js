@@ -69,12 +69,12 @@ function render() {
 }
 
 function clampFromData(data){
-    const ps = parseInt(pageSize.value) || 100;
-    const p = parseInt(page.value) || 1;
+    const ps = Math.max(parseInt(pageSize.value) || 100, 1);
+    const p = Math.max(parseInt(page.value) || 1, 1);
     const maxPage = Math.max(1, Math.ceil(data.length / ps));
 
     pageSize.value = ps;
-    page.value = Math.min(Math.max(p, 1), maxPage);
+    page.value = Math.min(p, maxPage);
     page.max = maxPage;
 
     return {p:parseInt(page.value), ps}
