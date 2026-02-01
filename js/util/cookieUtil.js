@@ -1,9 +1,10 @@
 function setCookie(name,value,daysToLive){
     const date= new Date();
-    date.setDate(date.getDate() + daysToLive*24*60*60*1000);
+    date.setDate(date.getDate() + daysToLive);
 
     const data = name + "=" + value + "; "
     const expires = "expires="+date.toUTCString()+"; ";
+    console.log(expires);
     const path = "path=/; "
     document.cookie=data + expires + path;
 }
