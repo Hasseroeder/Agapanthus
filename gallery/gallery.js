@@ -5,7 +5,7 @@ const inputWrapper = document.querySelector(".button-wrapper");
 const [prevButton,select,nextButton] = inputWrapper.children;
 const wrapper = document.getElementById("artWrapper");
 
-const ImageArray  = (await csv.load("/media/csv/galleryImages.csv")).map(image=>{
+const ImageArray  = (await csv.load("manifest.csv")).map(image=>{
 	image._idx;
 	image.filenames = image.filenames.split(",").map(name=>name.trim());
 	Object.defineProperty(image, 'idx', {
