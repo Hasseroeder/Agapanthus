@@ -1,17 +1,4 @@
-import { loadJson } from "/js/util/jsonUtil.js";
-
 const banner = document.getElementById("banner");
-
-export async function loadJson(path) {
-    var jsonData;
-    try {
-        const response = await fetch(path);
-        jsonData = await response.json();
-    } catch (error) {
-        console.error("Error loading json:", error);
-    }
-    return jsonData;
-}
 
 const konachanReq = fetch("http://antix1.transaero.space:44444/api", {
     method: "GET",
@@ -23,6 +10,6 @@ const konachanReq = fetch("http://antix1.transaero.space:44444/api", {
 //Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at https://konachan.net/post.json?tags=vote%3A3%3AratGirlHeather+limit%3A1+order%3Arandom. (Reason: CORS header ‘Access-Control-Allow-Origin’ missing). Status code: 200.
 //Error loading json: TypeError: NetworkError when attempting to fetch resource.
 
-const konachanJSON = await konachanReq;
+const konachanJSON = await konachanReq.json();
 const bannerSrc = konachanJSON[0].jpeg_url;
 banner.src = bannerSrc;
