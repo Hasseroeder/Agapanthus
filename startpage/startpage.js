@@ -10,5 +10,5 @@ const konachanReq = await fetch("https://antix1.transaero.space/api/", {
 //Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at https://konachan.net/post.json?tags=vote%3A3%3AratGirlHeather+limit%3A1+order%3Arandom. (Reason: CORS header ‘Access-Control-Allow-Origin’ missing). Status code: 200.
 //Error loading json: TypeError: NetworkError when attempting to fetch resource.
 
-const bannerSrc = konachanReq.json();
+const bannerSrc = await konachanReq.json();
 banner.src = bannerSrc;
