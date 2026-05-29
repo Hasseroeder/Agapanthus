@@ -8,15 +8,8 @@ const konachanReq = await fetch("https://antix1.transaero.space/api/", {
 });
 
 const bannerSrc = await konachanReq.json();
+banner.src = bannerSrc;
 
-async function resolveImage(url) {
-    const r = await fetch(url, { redirect: "follow" });
-
-    if (!r.ok) {
-        throw new Error(`HTTP ${r.status}`);
-    }
-
-    return r.url;
-}
-
-banner.src = await resolveImage(bannerSrc);
+banner.onerror = () => {
+    console.error("Failed to load image");
+};
