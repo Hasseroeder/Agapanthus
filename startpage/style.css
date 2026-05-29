@@ -2,3 +2,55 @@
     padding: 0 5rem;
     width: -moz-available;
 }
+
+.outer-search-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.inner-search-wrapper {
+    width: 30rem;
+}
+
+.search-box {
+    width: -moz-available;
+    height: 2rem;
+    background-color: #333;
+    border: none;
+    color: #eee;
+    font-family: monospace;
+    padding: 0 0.5rem;
+    border-bottom: 2px solid gray;
+    position: relative;
+}
+
+.search-box:focus {
+    outline: 2px solid gray;
+    outline-offset: -2px;
+}
+
+.engine-grid {
+    padding: 0rem 1rem;
+    background-color: #333;
+    width: -moz-available;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+}
+
+.engine-wrapper {
+    padding: 0.4rem 0.5rem;
+    display: flex;
+    position: relative;
+}
+
+.engine-wrapper:hover::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    pointer-events: none;
+    border-left: 2px solid #4c4c4c;
+    border-right: 2px solid gray;
+    border-bottom: 2px solid gray;
+    border-top: 2px solid #333;
+}
