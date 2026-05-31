@@ -9,7 +9,7 @@ const konachanReq = await fetch("https://antix1.transaero.space/api/", {
     },
 });
 const bannerSrc = await konachanReq.json();
-banner.referrerPolicy = "no-referrer";
+fetchImage.referrerPolicy = "no-referrer";
 //fetchImage.src = "/startpage/media/temporary.jpg";
 
 const engineGrid = document.getElementById("engine-grid");
