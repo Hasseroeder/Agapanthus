@@ -9,14 +9,16 @@ try {
             "x-api-key": "my_super_duper_mega_ultra_secure_API_key",
         },
     });
-    const imageSrc = await konachanReq.json();
+    const { src, id, source } = await konachanReq.json();
+    const imageLinks = document.querySelector(".image-links");
+    imageLinks.textContent = id;
     fetchImage.referrerPolicy = "no-referrer";
-    fetchImage.src = imageSrc;
+    fetchImage.src = src;
 } catch {
     console.error("reverse proxy unreachable.");
     fetchImage.src = "/startpage/media/backupImage.jpg";
 }
-const engineGrid = document.getElementById("engine-grid");
+/*const engineGrid = document.getElementById("engine-grid");
 const engines = await loadJson("/startpage/media/engine.json");
 engines.forEach((engine) => {
     const wrapper = make("div", { className: "engine-wrapper" });
@@ -31,8 +33,9 @@ engines.forEach((engine) => {
     svg.append(path);
     wrapper.append(svg);
     engineGrid.append(wrapper);
-});
+});*/
 
+const weatherCodesPromise = loadJson("/startpage/media/weather_codes.json");
 function updateFingerprinting(extraUserInfo) {
     const userInfo = bowser.getParser(window.navigator.userAgent).parsedResult;
     Object.assign(userInfo, {
@@ -66,34 +69,102 @@ function updateFingerprinting(extraUserInfo) {
     const languageIcon = "";
 
     document.querySelector(".locale").textContent =
-        languageIcon + "  Locale   ⇀ " + userInfo.language;
+        languageIcon + "  Locale    ⇀ " + userInfo.language;
     document.querySelector(".os").textContent =
         OSicon +
-        "  OS       ⇀ " +
+        "  OS        ⇀ " +
         userInfo.platform.type +
         " " +
         userInfo.os.name.toLowerCase();
 
-    async function updateIP() {
+    async function updateLocation() {
         try {
             const response = await fetch("https://ipinfo.io/json");
             const data = await response.json();
             document.querySelector(".ip").textContent =
-                "󰌘  IPv4     ⇀ " + data.ip;
+                "󰌘  IPv4      ⇀ " + data.ip;
             document.querySelector(".location").textContent =
-                "  Location ⇀ " + data.region + " " + data.country;
+                "  Location  ⇀ " +
+                data.city +
+                " " +
+                data.region +
+                " " +
+                data.country;
+
+            try {
+                const weatherCodes = await weatherCodesPromise;
+                const weatherContainer =
+                    document.querySelector(".weather-container");
+                const metroAPI = "https://api.open-meteo.com/v1/forecast?";
+                const [latitude, longitude] = data.loc.split(",");
+                const options = [
+                    "latitude=" + latitude,
+                    "longitude=" + longitude,
+                    "daily=" +
+                        [
+                            "temperature_2m_max",
+                            "temperature_2m_min",
+                            "weather_code",
+                            "precipitation_probability_max",
+                        ].join(","),
+                    "timezone=auto",
+                    "forecast_days=3",
+                ].join("&");
+                const constructedURL = metroAPI + options;
+                const weatherData = await loadJson(constructedURL);
+                const dailyData = weatherData.daily;
+                dailyData.time.forEach((day, i) => {
+                    const date = new Date(day);
+                    const weatherEl = make("div", {
+                        className: "command-line",
+                    });
+                    const span = make("span", {
+                        textContent:
+                            i == dailyData.time.length - 1 ? "└ 󰃶  " : "├ 󰃶  ",
+                    });
+                    span.textContent += date.toLocaleString("en-GB", {
+                        weekday: "short",
+                        month: "2-digit",
+                        day: "2-digit",
+                    });
+                    const weatherCode = weatherCodes[dailyData.weather_code[i]];
+                    const rainStr =
+                        " ⇀ " +
+                        weatherCode.emoji +
+                        "  " +
+                        weatherCode.description +
+                        " " +
+                        `(${dailyData.precipitation_probability_max[i]}% precip.)`;
+                    span.textContent += rainStr.padEnd(30);
+
+                    const tempStr =
+                        ` ${dailyData.temperature_2m_max[i]}°C`.padEnd(10) +
+                        ` ${dailyData.temperature_2m_min[i]}°C`;
+                    span.textContent += tempStr;
+                    weatherEl.append(span);
+                    weatherContainer.append(weatherEl);
+                });
+                console.log(weatherData);
+            } catch {
+                console.error("Error fetching weather");
+            }
         } catch (error) {
             console.error("Error fetching IP address:", error);
         }
     }
-    updateIP();
+    updateLocation();
 }
 
-const clocks = Array.from(document.querySelectorAll(".clock"));
-
+const clockContainer = document.querySelector(".clockContainer");
 const timezones = await loadJson("/startpage/media/timezones.json");
 timezones.forEach((tz, i) => {
-    const clocks = Array.from(document.querySelectorAll(".clock"));
+    const wrapper = make("div", { className: "command-line" }, [
+        i == timezones.length - 1 ? "└ " : "├ ",
+    ]);
+    tz.clock = make("span", { className: "clock" });
+    wrapper.append(tz.clock);
+    clockContainer.append(wrapper);
+
     const local = new Date();
     const utc = new Date(local.toLocaleString("en-US", { timeZone: "UTC" }));
     const zoned = new Date(local.toLocaleString("en-US", tz));
@@ -101,7 +172,6 @@ timezones.forEach((tz, i) => {
     tz.hour12 = false;
     tz.hour = "2-digit";
     tz.minute = "2-digit";
-    tz.clock = clocks[i];
 
     const region = tz.timeZone.split("/")[0];
     const globeIcon =
