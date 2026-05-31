@@ -8,8 +8,9 @@ const konachanReq = await fetch("https://antix1.transaero.space/api/", {
         "x-api-key": "my_super_duper_mega_ultra_secure_API_key",
     },
 });
-const bannerSrc = await konachanReq.json();
+const imageSrc = await konachanReq.json();
 fetchImage.referrerPolicy = "no-referrer";
+fetchImage.src = imageSrc;
 //fetchImage.src = "/startpage/media/temporary.jpg";
 
 const engineGrid = document.getElementById("engine-grid");
