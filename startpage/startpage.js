@@ -13,9 +13,10 @@ try {
     const imageLinks = document.querySelector(".image-links");
     imageLinks.append(
         make("a", { href: source, textContent: "󰜝  Source" }),
+        "  ",
         make("a", {
             href: "https://konachan.net/post/show/" + id,
-            textContent: "  󰜘  Konachan",
+            textContent: "󰜘  Konachan",
         }),
     );
     fetchImage.referrerPolicy = "no-referrer";
