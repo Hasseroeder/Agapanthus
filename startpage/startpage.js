@@ -34,14 +34,6 @@ try {
         commandLine.append(span);
         imageLinks.append(commandLine);
     });
-    imageLinks.append(
-        make("a", { href: source, textContent: "󰜝  Source" }),
-        "  ",
-        make("a", {
-            href: "https://konachan.net/post/show/" + id,
-            textContent: "󰜘  Konachan",
-        }),
-    );
     fetchImage.referrerPolicy = "no-referrer";
     fetchImage.src = src;
 } catch {
