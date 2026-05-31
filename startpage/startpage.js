@@ -11,6 +11,29 @@ try {
     });
     const { src, id, source } = await konachanReq.json();
     const imageLinks = document.querySelector(".image-links");
+
+    const linkObjs = [
+        {
+            href: source,
+            textContent: "󰜝  Source",
+        },
+        {
+            href: "https://konachan.net/post/show/" + id,
+            textContent: "󰜘  Konachan",
+        },
+    ];
+    linkObjs.forEach((linkObj, i) => {
+        const commandLine = make("div", {
+            className: "command-line",
+        });
+        const span = make("span", {
+            textContent: i == dailyData.time.length - 1 ? "└ " : "├ ",
+        });
+        const a = make("a", linkObj);
+        span.append(a);
+        commandLine.append(span);
+        imageLinks.append(commandLine);
+    });
     imageLinks.append(
         make("a", { href: source, textContent: "󰜝  Source" }),
         "  ",
@@ -122,7 +145,7 @@ function updateFingerprinting(extraUserInfo) {
                 const dailyData = weatherData.daily;
                 dailyData.time.forEach((day, i) => {
                     const date = new Date(day);
-                    const weatherEl = make("div", {
+                    const commandLine = make("div", {
                         className: "command-line",
                     });
                     const span = make("span", {
@@ -148,8 +171,8 @@ function updateFingerprinting(extraUserInfo) {
                         ` ${dailyData.temperature_2m_max[i]}°C`.padEnd(10) +
                         ` ${dailyData.temperature_2m_min[i]}°C`;
                     span.textContent += tempStr;
-                    weatherEl.append(span);
-                    weatherContainer.append(weatherEl);
+                    commandLine.append(span);
+                    weatherContainer.append(commandLine);
                 });
                 console.log(weatherData);
             } catch {
