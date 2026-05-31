@@ -11,7 +11,13 @@ try {
     });
     const { src, id, source } = await konachanReq.json();
     const imageLinks = document.querySelector(".image-links");
-    imageLinks.textContent = id;
+    imageLinks.append(
+        make("a", { href: source, textContent: "󰜝  Source" }),
+        make("a", {
+            href: "https://konachan.net/post/show/" + id,
+            textContent: "  󰜘  Konachan",
+        }),
+    );
     fetchImage.referrerPolicy = "no-referrer";
     fetchImage.src = src;
 } catch {
