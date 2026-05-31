@@ -10,6 +10,14 @@ body {
     text-rendering: optimizelegibility;
 }
 
+a {
+    color: #6d97c0;
+}
+
+a:hover {
+    color: #70b7cf;
+}
+
 .command-line {
     font-family:
         MesloLGM Nerd Font,
