@@ -4,12 +4,6 @@
         <meta charset="UTF-8" />
         <title>startpage</title>
         <link
-            href="/css/main.css"
-            rel="stylesheet"
-            type="text/css"
-            media="all"
-        />
-        <link
             href="/startpage/style.css"
             rel="stylesheet"
             type="text/css"
@@ -22,17 +16,65 @@
         />
     </head>
     <body>
-        <div class="center-pillar">
-            <div class="banner-wrapper">
-                <img id="banner" />
+        <section class="fastfetch-window">
+            <div class="command-line">
+                <span class="hostname"></span>
+                <span class="directory">~</span>
+                <span class="prompt">></span>
+                <span class="command">fetch</span>
             </div>
-            <div class="outer-search-wrapper">
-                <div class="inner-search-wrapper">
-                    <input class="search-box" id="searchBox" type="text" />
-                    <div id="engine-grid" class="engine-grid"></div>
+            <div class="fastfetch-wrapper">
+                <img id="fastfetch-image" />
+                <div class="fetch-text-wrapper">
+                    <div class="command-line">
+                        <span class="hostname"></span>
+                    </div>
+                    <div class="command-line">
+                        <span class="fastfetch-separator"
+                            >----------------------</span
+                        >
+                    </div>
+                    <div class="command-line">
+                        <span>Time</span>
+                    </div>
+                    <div class="command-line">
+                        ├
+                        <span class="clock">SLC</span>
+                    </div>
+                    <div class="command-line">
+                        ├
+                        <span class="clock">NYC</span>
+                    </div>
+                    <div class="command-line">
+                        └
+                        <span class="clock">BER</span>
+                    </div>
+                    <div class="command-line">
+                        <span>Platform</span>
+                    </div>
+                    <div class="command-line">
+                        ├
+                        <span class="os"></span>
+                    </div>
+                    <div class="command-line">
+                        └
+                        <span class="locale"></span>
+                    </div>
                 </div>
             </div>
+            <div class="command-line">
+                <span class="hostname"></span>
+                <span class="directory">~</span>
+                <span class="prompt">></span>
+            </div>
+        </section>
+        <div class="outer-search-wrapper">
+            <div class="inner-search-wrapper">
+                <input class="search-box" id="searchBox" type="text" />
+                <div id="engine-grid" class="engine-grid"></div>
+            </div>
         </div>
+        <script src="https://unpkg.com/bowser@2.4.0/es5.js"></script>
         <script type="module" src="/startpage/startpage.js"></script>
     </body>
 </html>

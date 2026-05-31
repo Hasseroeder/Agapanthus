@@ -1,11 +1,40 @@
-.banner-wrapper {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1.25rem;
+body {
+    font-family:
+        Whitney,
+        Helvetica Neue,
+        Helvetica,
+        Arial,
+        sans-serif;
+    background-color: #101010;
+    color: lightgray;
+    text-rendering: optimizelegibility;
 }
 
-#banner {
-    max-height: 25rem;
+.command-line {
+    font-family:
+        MesloLGM Nerd Font,
+        monospace;
+    font-size: 0.8rem;
+}
+.command-line > span {
+    white-space: pre;
+}
+
+.fastfetch-window {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    border-bottom: 2px solid #333;
+    gap: 0.3rem;
+}
+
+.fastfetch-wrapper {
+    display: flex;
+    gap: 1rem;
+}
+
+#fastfetch-image {
+    max-height: 20rem;
 }
 
 .outer-search-wrapper {
