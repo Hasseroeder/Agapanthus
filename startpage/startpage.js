@@ -42,7 +42,7 @@ function updateFingerprinting(extraUserInfo) {
         "@" +
         userInfo.browser.name.toLowerCase() +
         "-" +
-        userInfo.browser.version;
+        userInfo.browser.version.split(".")[0];
 
     Array.from(document.querySelectorAll(".hostname")).forEach(
         (el) => (el.textContent = hostname),
