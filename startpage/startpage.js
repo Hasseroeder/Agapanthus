@@ -27,7 +27,7 @@ try {
             className: "command-line",
         });
         const span = make("span", {
-            textContent: i == dailyData.time.length - 1 ? "└ " : "├ ",
+            textContent: i == linkObjs.length - 1 ? "└ " : "├ ",
         });
         const a = make("a", linkObj);
         span.append(a);
