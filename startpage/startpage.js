@@ -2,17 +2,20 @@ import { loadJson } from "/js/util/jsonUtil.js";
 import { make } from "/js/util/injectionUtil.js";
 
 const fetchImage = document.getElementById("fastfetch-image");
-const konachanReq = await fetch("https://antix1.transaero.space/api/", {
-    method: "GET",
-    headers: {
-        "x-api-key": "my_super_duper_mega_ultra_secure_API_key",
-    },
-});
-const imageSrc = await konachanReq.json();
-fetchImage.referrerPolicy = "no-referrer";
-fetchImage.src = imageSrc;
-//fetchImage.src = "/startpage/media/temporary.jpg";
-
+try {
+    const konachanReq = await fetch("https://antix1.transaero.space/api/", {
+        method: "GET",
+        headers: {
+            "x-api-key": "my_super_duper_mega_ultra_secure_API_key",
+        },
+    });
+    const imageSrc = await konachanReq.json();
+    fetchImage.referrerPolicy = "no-referrer";
+    fetchImage.src = imageSrc;
+} catch {
+    console.error("reverse proxy unreachable.");
+    fetchImage.src = "/startpage/media/backupImage.jpg";
+}
 const engineGrid = document.getElementById("engine-grid");
 const engines = await loadJson("/startpage/media/engine.json");
 engines.forEach((engine) => {
@@ -63,32 +66,32 @@ function updateFingerprinting(extraUserInfo) {
     const languageIcon = "";
 
     document.querySelector(".locale").textContent =
-        languageIcon + "  Locale ⇀ " + userInfo.language;
+        languageIcon + "  Locale   ⇀ " + userInfo.language;
     document.querySelector(".os").textContent =
         OSicon +
-        "  OS     ⇀ " +
+        "  OS       ⇀ " +
         userInfo.platform.type +
         " " +
         userInfo.os.name.toLowerCase();
+
+    async function updateIP() {
+        try {
+            const response = await fetch("https://ipinfo.io/json");
+            const data = await response.json();
+            document.querySelector(".ip").textContent =
+                "󰌘  IPv4     ⇀ " + data.ip;
+            document.querySelector(".location").textContent =
+                "  Location ⇀ " + data.region + " " + data.country;
+        } catch (error) {
+            console.error("Error fetching IP address:", error);
+        }
+    }
+    updateIP();
 }
 
 const clocks = Array.from(document.querySelectorAll(".clock"));
 
-const timezones = [
-    {
-        airport: "SLC",
-        timeZone: "America/Denver",
-    },
-    {
-        airport: "NYC",
-        timeZone: "America/New_York",
-    },
-    {
-        airport: "BER",
-        timeZone: "Europe/Berlin",
-    },
-];
-
+const timezones = await loadJson("/startpage/media/timezones.json");
 timezones.forEach((tz, i) => {
     const clocks = Array.from(document.querySelectorAll(".clock"));
     const local = new Date();

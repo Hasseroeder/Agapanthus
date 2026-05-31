@@ -1,0 +1,14 @@
+[
+    {
+        "airport": "SLC",
+        "timeZone": "America/Denver"
+    },
+    {
+        "airport": "NYC",
+        "timeZone": "America/New_York"
+    },
+    {
+        "airport": "BER",
+        "timeZone": "Europe/Berlin"
+    }
+]
