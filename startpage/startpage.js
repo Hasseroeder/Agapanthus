@@ -15,11 +15,11 @@ try {
     const linkObjs = [
         {
             href: source,
-            textContent: "󰜝  Source",
+            textContent: "Source",
         },
         {
             href: "https://konachan.net/post/show/" + id,
-            textContent: "󰜘  Konachan",
+            textContent: "Konachan",
         },
     ];
     linkObjs.forEach((linkObj, i) => {
@@ -27,7 +27,7 @@ try {
             className: "command-line",
         });
         const span = make("span", {
-            textContent: i == linkObjs.length - 1 ? "└ " : "├ ",
+            textContent: i == linkObjs.length - 1 ? "└   " : "├   ",
         });
         const a = make("a", linkObj);
         span.append(a);
