@@ -192,7 +192,7 @@ timezones.forEach((tz, i) => {
         const beforeUtc = tz.utcOffset < 0;
         const absUtcOffset = Math.abs(tz.utcOffset);
         const utcTimeString =
-            (beforeUtc ? "+" : "-") + String(absUtcOffset).padStart(2, "0");
+            (beforeUtc ? "-" : "+") + String(absUtcOffset).padStart(2, "0");
 
         const airportString = (globeIcon + " " + tz.airport).padEnd(7, " ");
         const utcString = ("UTC" + utcTimeString).padEnd(8, " ");
