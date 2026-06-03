@@ -42,19 +42,18 @@ try {
 }
 
 const weatherCodesPromise = loadJson("/startpage/media/weather_codes.json");
-function updateFingerprinting(extraUserInfo) {
-    const userInfo = bowser.getParser(window.navigator.userAgent).parsedResult;
-    Object.assign(userInfo, {
+function updateFingerprinting(config) {
+    const fingerPrintInfo = {
+        ...bowser.getParser(window.navigator.userAgent).parsedResult,
         language: navigator.language || navigator.userLanguage,
-        ...extraUserInfo,
-    });
+    };
 
     const hostname =
-        userInfo.userName +
+        config.userName +
         "@" +
-        userInfo.browser.name.toLowerCase() +
+        fingerPrintInfo.browser.name.toLowerCase() +
         "-" +
-        userInfo.browser.version.split(".")[0];
+        fingerPrintInfo.browser.version.split(".")[0];
 
     Array.from(document.querySelectorAll(".hostname")).forEach(
         (el) => (el.textContent = hostname),
@@ -70,18 +69,62 @@ function updateFingerprinting(extraUserInfo) {
             windows: "󰨡",
             ios: "",
             macos: "",
-        }[userInfo.os.name.toLowerCase()] ?? "";
+        }[fingerPrintInfo.os.name.toLowerCase()] ?? "";
 
     const languageIcon = "";
 
     document.querySelector(".locale").textContent =
-        languageIcon + "  Locale    ⇀ " + userInfo.language;
+        languageIcon + "  Locale    ⇀ " + fingerPrintInfo.language;
     document.querySelector(".os").textContent =
         OSicon +
         "  OS        ⇀ " +
-        userInfo.platform.type +
+        fingerPrintInfo.platform.type +
         " " +
-        userInfo.os.name.toLowerCase();
+        fingerPrintInfo.os.name.toLowerCase();
+
+    const clockContainer = document.querySelector(".clockContainer");
+    config.timezones.forEach((tz, i) => {
+        const wrapper = make("div", { className: "command-line" }, [
+            i == config.timezones.length - 1 ? "└ " : "├ ",
+        ]);
+        tz.clock = make("span", { className: "clock" });
+        wrapper.append(tz.clock);
+        clockContainer.append(wrapper);
+
+        const local = new Date();
+        const utc = new Date(
+            local.toLocaleString("en-US", { timeZone: "UTC" }),
+        );
+        const zoned = new Date(local.toLocaleString("en-US", tz));
+        tz.utcOffset = (zoned - utc) / 60000 / 60;
+        tz.hour12 = false;
+        tz.hour = "2-digit";
+        tz.minute = "2-digit";
+
+        const region = tz.timeZone.split("/")[0];
+        const globeIcon =
+            {
+                Africa: "",
+                America: "",
+                Asia: "",
+                Europe: "",
+            }[region] ?? "󰊷";
+
+        tz.update = function () {
+            const beforeUtc = tz.utcOffset < 0;
+            const absUtcOffset = Math.abs(tz.utcOffset);
+            const utcTimeString =
+                (beforeUtc ? "-" : "+") + String(absUtcOffset).padStart(2, "0");
+
+            const airportString = (globeIcon + " " + tz.airport).padEnd(7, " ");
+            const utcString = ("UTC" + utcTimeString).padEnd(8, " ");
+            const timeString = new Date().toLocaleTimeString("en-US", tz);
+
+            tz.clock.textContent = airportString + utcString + timeString;
+        };
+        tz.interval = setInterval(tz.update, 10 * 1000);
+        tz.update();
+    });
 
     async function updateLocation() {
         try {
@@ -141,7 +184,7 @@ function updateFingerprinting(extraUserInfo) {
                         weatherCode.description +
                         " " +
                         `(${dailyData.precipitation_probability_max[i]}% precip.)`;
-                    span.textContent += rainStr.padEnd(30);
+                    span.textContent += rainStr.padEnd(40);
 
                     const tempStr =
                         ` ${dailyData.temperature_2m_max[i]}°C`.padEnd(10) +
@@ -161,46 +204,19 @@ function updateFingerprinting(extraUserInfo) {
     updateLocation();
 }
 
-const clockContainer = document.querySelector(".clockContainer");
-const timezones = await loadJson("/startpage/media/timezones.json");
-timezones.forEach((tz, i) => {
-    const wrapper = make("div", { className: "command-line" }, [
-        i == timezones.length - 1 ? "└ " : "├ ",
-    ]);
-    tz.clock = make("span", { className: "clock" });
-    wrapper.append(tz.clock);
-    clockContainer.append(wrapper);
+const defaultConfig = {
+    userName: "user",
+    weather: {
+        mode: "ip",
+        latitude: null,
+        longitude: null,
+        label: null,
+    },
+    timezones: [
+        { airport: "SLC", timeZone: "America/Denver" },
+        { airport: "NYC", timeZone: "America/New_York" },
+        { airport: "BER", timeZone: "Europe/Berlin" },
+    ],
+};
 
-    const local = new Date();
-    const utc = new Date(local.toLocaleString("en-US", { timeZone: "UTC" }));
-    const zoned = new Date(local.toLocaleString("en-US", tz));
-    tz.utcOffset = (zoned - utc) / 60000 / 60;
-    tz.hour12 = false;
-    tz.hour = "2-digit";
-    tz.minute = "2-digit";
-
-    const region = tz.timeZone.split("/")[0];
-    const globeIcon =
-        {
-            Africa: "",
-            America: "",
-            Asia: "",
-            Europe: "",
-        }[region] ?? "󰊷";
-
-    tz.update = function () {
-        const beforeUtc = tz.utcOffset < 0;
-        const absUtcOffset = Math.abs(tz.utcOffset);
-        const utcTimeString =
-            (beforeUtc ? "-" : "+") + String(absUtcOffset).padStart(2, "0");
-
-        const airportString = (globeIcon + " " + tz.airport).padEnd(7, " ");
-        const utcString = ("UTC" + utcTimeString).padEnd(8, " ");
-        const timeString = new Date().toLocaleTimeString("en-US", tz);
-
-        tz.clock.textContent = airportString + utcString + timeString;
-    };
-    tz.update();
-});
-
-updateFingerprinting({ userName: "heather" });
+updateFingerprinting(defaultConfig);
