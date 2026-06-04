@@ -169,10 +169,8 @@ function updateFingerprinting(config) {
             tz.clock,
         );
 
-        tz.update = function () {
-            const timeString = new Date().toLocaleTimeString("en-US", tz);
-            tz.clock.textContent = timeString;
-        };
+        tz.update = () =>
+            (tz.clock.textContent = new Date().toLocaleTimeString("en-US", tz));
         tz.update();
         tz.interval = setInterval(tz.update, 10 * 1000);
     });
