@@ -41,6 +41,50 @@ try {
     fetchImage.src = "/startpage/media/backupImage.jpg";
 }
 
+const fastfetchKeys = [];
+class fastfetchKey {
+    constructor({ category, emoji, text }) {
+        this.category = category;
+        this.emoji = emoji;
+        this.text = text;
+        this.textpadding = text.length;
+        this.structure = "├";
+
+        this.el = make("span");
+        fastfetchKeys.push(this);
+        fastfetchKey.update();
+        return this.el;
+    }
+    update() {
+        this.el.textContent =
+            `${this.structure} ` +
+            `${this.emoji}  ` +
+            this.text.padEnd(this.textpadding) +
+            ` ${fastfetchKey.separator} `;
+    }
+    static separator = "⇀";
+    static update() {
+        const categories = [];
+        var maxPadding = 0;
+        fastfetchKeys.forEach((key) => {
+            !categories.includes(key.category) && categories.push(key.category);
+            maxPadding = Math.max(key.textpadding, maxPadding);
+        });
+        categories.forEach((category) => {
+            const keys = fastfetchKeys.filter(
+                (key) => key.category == category,
+            );
+            keys.forEach((key, i) => {
+                key.structure = i == keys.length - 1 ? "└" : "├";
+            });
+        });
+        fastfetchKeys.forEach((key) => {
+            key.textpadding = maxPadding;
+            key.update();
+        });
+    }
+}
+
 const weatherCodesPromise = loadJson("/startpage/media/weather_codes.json");
 function updateFingerprinting(config) {
     const fingerPrintInfo = {
@@ -71,16 +115,21 @@ function updateFingerprinting(config) {
             macos: "",
         }[fingerPrintInfo.os.name.toLowerCase()] ?? "";
 
-    const languageIcon = "";
-
-    document.querySelector(".locale").textContent =
-        languageIcon + "  Locale    ⇀ " + fingerPrintInfo.language;
-    document.querySelector(".os").textContent =
-        OSicon +
-        "  OS        ⇀ " +
+    const OSel = document.querySelector(".os");
+    OSel.append(
+        new fastfetchKey({ category: "Platform", emoji: OSicon, text: "OS" }),
+    );
+    OSel.append(
         fingerPrintInfo.platform.type +
-        " " +
-        fingerPrintInfo.os.name.toLowerCase();
+            " " +
+            fingerPrintInfo.os.name.toLowerCase(),
+    );
+
+    const localeEl = document.querySelector(".locale");
+    localeEl.append(
+        new fastfetchKey({ category: "Platform", emoji: "", text: "locale" }),
+    );
+    localeEl.append(fingerPrintInfo.language);
 
     const clockContainer = document.querySelector(".clockContainer");
     config.timezones.forEach((tz, i) => {
@@ -116,29 +165,44 @@ function updateFingerprinting(config) {
             const utcTimeString =
                 (beforeUtc ? "-" : "+") + String(absUtcOffset).padStart(2, "0");
 
-            const airportString = (globeIcon + " " + tz.airport).padEnd(7, " ");
-            const utcString = ("UTC" + utcTimeString).padEnd(8, " ");
+            const airportString = (globeIcon + "  " + tz.airport).padEnd(
+                9,
+                " ",
+            );
+            const utcString = ("UTC" + utcTimeString).padEnd(9, " ");
             const timeString = new Date().toLocaleTimeString("en-US", tz);
 
             tz.clock.textContent = airportString + utcString + timeString;
         };
-        tz.interval = setInterval(tz.update, 10 * 1000);
         tz.update();
+        tz.interval = setInterval(tz.update, 10 * 1000);
     });
 
     async function updateLocation() {
         try {
             const response = await fetch("https://ipinfo.io/json");
             const data = await response.json();
-            document.querySelector(".ip").textContent =
-                "󰌘  IPv4      ⇀ " + data.ip;
-            document.querySelector(".location").textContent =
-                "  Location  ⇀ " +
-                data.city +
-                " " +
-                data.region +
-                " " +
-                data.country;
+            const ipEl = document.querySelector(".ip");
+            ipEl.append(
+                new fastfetchKey({
+                    category: "Connection",
+                    emoji: "󰌘",
+                    text: "IPv4",
+                }),
+            );
+            ipEl.append(data.ip);
+
+            const locationEl = document.querySelector(".location");
+            locationEl.append(
+                new fastfetchKey({
+                    category: "Connection",
+                    emoji: "",
+                    text: "Location",
+                }),
+            );
+            locationEl.append(
+                data.city + " " + data.region + " " + data.country,
+            );
 
             try {
                 const weatherCodes = await weatherCodesPromise;
@@ -167,29 +231,29 @@ function updateFingerprinting(config) {
                     const commandLine = make("div", {
                         className: "command-line",
                     });
-                    const span = make("span", {
-                        textContent:
-                            i == dailyData.time.length - 1 ? "└ 󰃶  " : "├ 󰃶  ",
-                    });
-                    span.textContent += date.toLocaleString("en-GB", {
-                        weekday: "short",
-                        month: "2-digit",
-                        day: "2-digit",
-                    });
+                    const span = make("span");
+                    span.append(
+                        new fastfetchKey({
+                            category: "Weather",
+                            emoji: "󰃶",
+                            text: date.toLocaleString("en-GB", {
+                                weekday: "short",
+                                month: "2-digit",
+                                day: "2-digit",
+                            }),
+                        }),
+                    );
                     const weatherCode = weatherCodes[dailyData.weather_code[i]];
                     const rainStr =
-                        " ⇀ " +
-                        weatherCode.emoji +
-                        "  " +
-                        weatherCode.description +
+                        weatherCode +
                         " " +
                         `(${dailyData.precipitation_probability_max[i]}% precip.)`;
-                    span.textContent += rainStr.padEnd(40);
+                    span.append(rainStr.padEnd(35));
 
                     const tempStr =
                         ` ${dailyData.temperature_2m_max[i]}°C`.padEnd(10) +
                         ` ${dailyData.temperature_2m_min[i]}°C`;
-                    span.textContent += tempStr;
+                    span.append(tempStr);
                     commandLine.append(span);
                     weatherContainer.append(commandLine);
                 });
