@@ -41,7 +41,6 @@ try {
     fetchImage.src = "/startpage/media/backupImage.jpg";
 }
 
-const fastfetchKeys = [];
 class fastfetchKey {
     constructor({ category, emoji, text }) {
         this.category = category;
@@ -51,7 +50,7 @@ class fastfetchKey {
         this.structure = "├";
 
         this.el = make("span");
-        fastfetchKeys.push(this);
+        fastfetchKey.array.push(this);
         fastfetchKey.update();
         return this.el;
     }
@@ -62,23 +61,24 @@ class fastfetchKey {
             this.text.padEnd(this.textpadding) +
             ` ${fastfetchKey.separator} `;
     }
+    static array = [];
     static separator = "⇀";
     static update() {
         const categories = [];
         var maxPadding = 0;
-        fastfetchKeys.forEach((key) => {
+        fastfetchKey.array.forEach((key) => {
             !categories.includes(key.category) && categories.push(key.category);
             maxPadding = Math.max(key.textpadding, maxPadding);
         });
         categories.forEach((category) => {
-            const keys = fastfetchKeys.filter(
+            const keys = fastfetchKey.array.filter(
                 (key) => key.category == category,
             );
             keys.forEach((key, i) => {
                 key.structure = i == keys.length - 1 ? "└" : "├";
             });
         });
-        fastfetchKeys.forEach((key) => {
+        fastfetchKey.array.forEach((key) => {
             key.textpadding = maxPadding;
             key.update();
         });
