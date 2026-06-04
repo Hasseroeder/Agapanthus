@@ -59,10 +59,10 @@ class fastfetchKey {
             `${this.structure} ` +
             `${this.emoji}  ` +
             this.text.padEnd(this.textpadding) +
-            ` ${fastfetchKey.separator} `;
+            fastfetchKey.separator;
     }
     static array = [];
-    static separator = "⇀";
+    static separator = "  ⇀ ";
     static update() {
         const categories = [];
         var maxPadding = 0;
@@ -133,11 +133,8 @@ function updateFingerprinting(config) {
 
     const clockContainer = document.querySelector(".clockContainer");
     config.timezones.forEach((tz, i) => {
-        const wrapper = make("div", { className: "command-line" }, [
-            i == config.timezones.length - 1 ? "└ " : "├ ",
-        ]);
-        tz.clock = make("span", { className: "clock" });
-        wrapper.append(tz.clock);
+        const wrapper = make("div", { className: "command-line" });
+        tz.clock = make("span");
         clockContainer.append(wrapper);
 
         const local = new Date();
@@ -145,7 +142,11 @@ function updateFingerprinting(config) {
             local.toLocaleString("en-US", { timeZone: "UTC" }),
         );
         const zoned = new Date(local.toLocaleString("en-US", tz));
-        tz.utcOffset = (zoned - utc) / 60000 / 60;
+        const utcOffset = (zoned - utc) / 60000 / 60;
+        const utcString = new Intl.NumberFormat("en-US", {
+            signDisplay: "always",
+        }).format(utcOffset);
+
         tz.hour12 = false;
         tz.hour = "2-digit";
         tz.minute = "2-digit";
@@ -159,20 +160,18 @@ function updateFingerprinting(config) {
                 Europe: "",
             }[region] ?? "󰊷";
 
+        wrapper.append(
+            new fastfetchKey({
+                category: "Time",
+                emoji: globeIcon,
+                text: tz.airport + " UTC" + utcString,
+            }),
+            tz.clock,
+        );
+
         tz.update = function () {
-            const beforeUtc = tz.utcOffset < 0;
-            const absUtcOffset = Math.abs(tz.utcOffset);
-            const utcTimeString =
-                (beforeUtc ? "-" : "+") + String(absUtcOffset).padStart(2, "0");
-
-            const airportString = (globeIcon + "  " + tz.airport).padEnd(
-                9,
-                " ",
-            );
-            const utcString = ("UTC" + utcTimeString).padEnd(9, " ");
             const timeString = new Date().toLocaleTimeString("en-US", tz);
-
-            tz.clock.textContent = airportString + utcString + timeString;
+            tz.clock.textContent = timeString;
         };
         tz.update();
         tz.interval = setInterval(tz.update, 10 * 1000);
