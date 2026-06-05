@@ -96,3 +96,8 @@ a:hover {
     border-bottom: 2px solid gray;
     border-top: 2px solid #333;
 }
+
+.clock-container,
+.weather-container {
+    display: grid;
+}

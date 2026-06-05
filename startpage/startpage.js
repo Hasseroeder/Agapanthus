@@ -1,7 +1,16 @@
 import { loadJson } from "/js/util/jsonUtil.js";
 import { make } from "/js/util/injectionUtil.js";
+import { fastfetchLine } from "/startpage/fastfetchObj.js";
 
 const fetchImage = document.getElementById("fastfetch-image");
+const imageLinks = document.querySelector(".image-links");
+const tempLine = new fastfetchLine({
+    category: "Image",
+    emoji: "",
+    key: "Request",
+    value: "in progress",
+});
+imageLinks.append(tempLine.wrapper);
 try {
     const konachanReq = await fetch("https://antix1.transaero.space/api/", {
         method: "GET",
@@ -10,7 +19,7 @@ try {
         },
     });
     const { src, id, source } = await konachanReq.json();
-    const imageLinks = document.querySelector(".image-links");
+    tempLine.remove();
 
     const linkObjs = [
         {
@@ -37,52 +46,9 @@ try {
     fetchImage.referrerPolicy = "no-referrer";
     fetchImage.src = src;
 } catch {
+    tempLine.valueObj.el.textContent = "failed";
     console.error("reverse proxy unreachable.");
     fetchImage.src = "/startpage/media/backupImage.jpg";
-}
-
-class fastfetchKey {
-    constructor({ category, emoji, text }) {
-        this.category = category;
-        this.emoji = emoji;
-        this.text = text;
-        this.textpadding = text.length;
-        this.structure = "├";
-
-        this.el = make("span");
-        fastfetchKey.array.push(this);
-        fastfetchKey.update();
-        return this.el;
-    }
-    update() {
-        this.el.textContent =
-            `${this.structure} ` +
-            `${this.emoji}  ` +
-            this.text.padEnd(this.textpadding) +
-            fastfetchKey.separator;
-    }
-    static array = [];
-    static separator = "  ⇀ ";
-    static update() {
-        const categories = [];
-        var maxPadding = 0;
-        fastfetchKey.array.forEach((key) => {
-            !categories.includes(key.category) && categories.push(key.category);
-            maxPadding = Math.max(key.textpadding, maxPadding);
-        });
-        categories.forEach((category) => {
-            const keys = fastfetchKey.array.filter(
-                (key) => key.category == category,
-            );
-            keys.forEach((key, i) => {
-                key.structure = i == keys.length - 1 ? "└" : "├";
-            });
-        });
-        fastfetchKey.array.forEach((key) => {
-            key.textpadding = maxPadding;
-            key.update();
-        });
-    }
 }
 
 const weatherCodesPromise = loadJson("/startpage/media/weather_codes.json");
@@ -115,41 +81,38 @@ function updateFingerprinting(config) {
             macos: "",
         }[fingerPrintInfo.os.name.toLowerCase()] ?? "";
 
-    const OSel = document.querySelector(".os");
-    OSel.append(
-        new fastfetchKey({ category: "Platform", emoji: OSicon, text: "OS" }),
-    );
-    OSel.append(
-        fingerPrintInfo.platform.type +
+    const OSline = new fastfetchLine({
+        category: "Platform",
+        emoji: OSicon,
+        key: "OS",
+        value:
+            fingerPrintInfo.platform.type +
             " " +
             fingerPrintInfo.os.name.toLowerCase(),
-    );
+    });
+    document.querySelector(".os").append(OSline.wrapper);
 
-    const localeEl = document.querySelector(".locale");
-    localeEl.append(
-        new fastfetchKey({ category: "Platform", emoji: "", text: "locale" }),
-    );
-    localeEl.append(fingerPrintInfo.language);
+    const localeLine = new fastfetchLine({
+        category: "Platform",
+        emoji: "",
+        key: "locale",
+        value: fingerPrintInfo.language,
+    });
+    document.querySelector(".locale").append(localeLine.wrapper);
 
-    const clockContainer = document.querySelector(".clockContainer");
+    const clockContainer = document.querySelector(".clock-container");
     config.timezones.forEach((tz, i) => {
-        const wrapper = make("div", { className: "command-line" });
-        tz.clock = make("span");
-        clockContainer.append(wrapper);
-
         const local = new Date();
         const utc = new Date(
             local.toLocaleString("en-US", { timeZone: "UTC" }),
         );
-        const zoned = new Date(local.toLocaleString("en-US", tz));
+        const zoned = new Date(
+            local.toLocaleString("en-US", { timeZone: tz.timeZone }),
+        );
         const utcOffset = (zoned - utc) / 60000 / 60;
         const utcString = new Intl.NumberFormat("en-US", {
             signDisplay: "always",
         }).format(utcOffset);
-
-        tz.hour12 = false;
-        tz.hour = "2-digit";
-        tz.minute = "2-digit";
 
         const region = tz.timeZone.split("/")[0];
         const globeIcon =
@@ -160,17 +123,19 @@ function updateFingerprinting(config) {
                 Europe: "",
             }[region] ?? "󰊷";
 
-        wrapper.append(
-            new fastfetchKey({
-                category: "Time",
-                emoji: globeIcon,
-                text: tz.airport + " UTC" + utcString,
-            }),
-            tz.clock,
-        );
+        const clockLine = new fastfetchLine({
+            category: "Time",
+            emoji: "󰃶",
+            key: tz.airport + " UTC" + utcString,
+            value: new Date().toLocaleTimeString("en-US", tz),
+        });
+        clockContainer.append(clockLine.wrapper);
 
         tz.update = () =>
-            (tz.clock.textContent = new Date().toLocaleTimeString("en-US", tz));
+            (clockLine.valueObj.el.textContent = new Date().toLocaleTimeString(
+                "en-US",
+                tz,
+            ));
         tz.update();
         tz.interval = setInterval(tz.update, 10 * 1000);
     });
@@ -181,30 +146,34 @@ function updateFingerprinting(config) {
             const data = await response.json();
             const ipEl = document.querySelector(".ip");
             ipEl.append(
-                new fastfetchKey({
+                new fastfetchLine({
                     category: "Connection",
                     emoji: "󰌘",
-                    text: "IPv4",
-                }),
+                    key: "IPv4",
+                    value: data.ip,
+                }).wrapper,
             );
-            ipEl.append(data.ip);
 
             const locationEl = document.querySelector(".location");
             locationEl.append(
-                new fastfetchKey({
+                new fastfetchLine({
                     category: "Connection",
                     emoji: "",
-                    text: "Location",
-                }),
-            );
-            locationEl.append(
-                data.city + " " + data.region + " " + data.country,
+                    key: "Location",
+                    value: data.city + " " + data.region + " " + data.country,
+                }).wrapper,
             );
 
+            const weatherContainer =
+                document.querySelector(".weather-container");
+            const tempLine = new fastfetchLine({
+                category: "Weather",
+                emoji: "󰃶",
+                key: "Request",
+                value: "in progress",
+            });
+            weatherContainer.append(tempLine.wrapper);
             try {
-                const weatherCodes = await weatherCodesPromise;
-                const weatherContainer =
-                    document.querySelector(".weather-container");
                 const metroAPI = "https://api.open-meteo.com/v1/forecast?";
                 const [latitude, longitude] = data.loc.split(",");
                 const options = [
@@ -221,41 +190,39 @@ function updateFingerprinting(config) {
                     "forecast_days=3",
                 ].join("&");
                 const constructedURL = metroAPI + options;
-                const weatherData = await loadJson(constructedURL);
+                const [weatherCodes, weatherData] = await Promise.all([
+                    weatherCodesPromise,
+                    loadJson(constructedURL),
+                ]);
+                tempLine.remove();
                 const dailyData = weatherData.daily;
                 dailyData.time.forEach((day, i) => {
                     const date = new Date(day);
-                    const commandLine = make("div", {
-                        className: "command-line",
-                    });
-                    const span = make("span");
-                    span.append(
-                        new fastfetchKey({
-                            category: "Weather",
-                            emoji: "󰃶",
-                            text: date.toLocaleString("en-GB", {
-                                weekday: "short",
-                                month: "2-digit",
-                                day: "2-digit",
-                            }),
-                        }),
-                    );
                     const weatherCode = weatherCodes[dailyData.weather_code[i]];
                     const rainStr =
                         weatherCode +
                         " " +
                         `(${dailyData.precipitation_probability_max[i]}% precip.)`;
-                    span.append(rainStr.padEnd(35));
-
                     const tempStr =
                         ` ${dailyData.temperature_2m_max[i]}°C`.padEnd(10) +
                         ` ${dailyData.temperature_2m_min[i]}°C`;
-                    span.append(tempStr);
-                    commandLine.append(span);
-                    weatherContainer.append(commandLine);
+
+                    const line = new fastfetchLine({
+                        category: "Weather",
+                        emoji: "󰃶",
+                        key: date.toLocaleString("en-GB", {
+                            weekday: "short",
+                            month: "2-digit",
+                            day: "2-digit",
+                        }),
+                        value: rainStr.padEnd(35) + tempStr,
+                    });
+
+                    weatherContainer.append(line.wrapper);
                 });
                 console.log(weatherData);
             } catch {
+                tempLine.valueObj.el.textContent = "failed";
                 console.error("Error fetching weather");
             }
         } catch (error) {
@@ -274,9 +241,27 @@ const defaultConfig = {
         label: null,
     },
     timezones: [
-        { airport: "SLC", timeZone: "America/Denver" },
-        { airport: "NYC", timeZone: "America/New_York" },
-        { airport: "BER", timeZone: "Europe/Berlin" },
+        {
+            airport: "SLC",
+            timeZone: "America/Denver",
+            hour12: false,
+            hour: "2-digit",
+            minute: "2-digit",
+        },
+        {
+            airport: "NYC",
+            timeZone: "America/New_York",
+            hour12: false,
+            hour: "2-digit",
+            minute: "2-digit",
+        },
+        {
+            airport: "BER",
+            timeZone: "Europe/Berlin",
+            hour12: false,
+            hour: "2-digit",
+            minute: "2-digit",
+        },
     ],
 };
 
