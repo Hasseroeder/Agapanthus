@@ -3,6 +3,7 @@ import { make } from "/js/util/injectionUtil.js";
 import { fastfetchLine } from "/startpage/fastfetchObj.js";
 
 const fetchImage = document.getElementById("fastfetch-image");
+const fetchTextWrapper = document.querySelector(".fetch-text-wrapper");
 const imageLinks = document.querySelector(".image-links");
 const tempLine = new fastfetchLine({
     keyConfig: {
@@ -55,6 +56,7 @@ try {
 
 const weatherCodesPromise = loadJson("/startpage/media/weather_codes.json");
 function updateFingerprinting(config) {
+    const { fetchModules } = config;
     const fingerPrintInfo = {
         ...bowser.getParser(window.navigator.userAgent).parsedResult,
         language: navigator.language || navigator.userLanguage,
@@ -111,7 +113,8 @@ function updateFingerprinting(config) {
     document.querySelector(".locale").append(localeLine.wrapper);
 
     const clockContainer = document.querySelector(".clock-container");
-    config.timezones.forEach((tz, i) => {
+    const timeConfig = fetchModules.find((module) => module.slug == "time");
+    timeConfig.data.forEach((tz, i) => {
         const local = new Date();
         const utc = new Date(
             local.toLocaleString("en-US", { timeZone: "UTC" }),
@@ -257,33 +260,42 @@ function updateFingerprinting(config) {
 
 const defaultConfig = {
     userName: "user",
-    weather: {
-        mode: "ip",
-        latitude: null,
-        longitude: null,
-        label: null,
-    },
-    timezones: [
+    fetchModules: [
         {
-            airport: "SLC",
-            timeZone: "America/Denver",
-            hour12: false,
-            hour: "2-digit",
-            minute: "2-digit",
+            slug: "weather",
+            // config unused for now
+            data: {
+                mode: "ip",
+                latitude: null,
+                longitude: null,
+                label: null,
+            },
         },
         {
-            airport: "NYC",
-            timeZone: "America/New_York",
-            hour12: false,
-            hour: "2-digit",
-            minute: "2-digit",
-        },
-        {
-            airport: "BER",
-            timeZone: "Europe/Berlin",
-            hour12: false,
-            hour: "2-digit",
-            minute: "2-digit",
+            slug: "time",
+            data: [
+                {
+                    airport: "SLC",
+                    timeZone: "America/Denver",
+                    hour12: false,
+                    hour: "2-digit",
+                    minute: "2-digit",
+                },
+                {
+                    airport: "NYC",
+                    timeZone: "America/New_York",
+                    hour12: false,
+                    hour: "2-digit",
+                    minute: "2-digit",
+                },
+                {
+                    airport: "BER",
+                    timeZone: "Europe/Berlin",
+                    hour12: false,
+                    hour: "2-digit",
+                    minute: "2-digit",
+                },
+            ],
         },
     ],
 };
