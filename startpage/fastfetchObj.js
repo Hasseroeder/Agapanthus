@@ -16,8 +16,10 @@ export class fastfetchLine {
         const toRemoveIdx = fastfetchKey.array.findIndex(
             (key) => key === this.keyObj,
         );
-        fastfetchKey.array.splice(toRemoveIdx, 1);
-        fastfetchKey.update();
+        if (toRemoveIdx !== -1) {
+            fastfetchKey.array.splice(idx, 1);
+            fastfetchKey.update();
+        }
     }
 }
 
@@ -60,23 +62,21 @@ class fastfetchKey {
     static array = [];
     static separator = "  ⇀ ";
     static update() {
-        const categories = [];
-        var maxPadding = 0;
-        fastfetchKey.array.forEach((key) => {
-            !categories.includes(key.category) && categories.push(key.category);
-            maxPadding = Math.max(key.textpadding, maxPadding);
-        });
-        categories.forEach((category) => {
-            const keys = fastfetchKey.array.filter(
-                (key) => key.category == category,
-            );
-            keys.forEach((key, i) => {
-                key.structure = i == keys.length - 1 ? "└" : "├";
-            });
-        });
-        fastfetchKey.array.forEach((key) => {
+        const groups = new Map();
+        let maxPadding = 0;
+        for (const key of fastfetchKey.array) {
+            maxPadding = Math.max(maxPadding, key.textpadding);
+            !groups.has(key.category) && groups.set(key.category, []);
+            groups.get(key.category).push(key);
+        }
+        for (const [, keys] of groups) {
+            for (let i = 0; i < keys.length; i++) {
+                keys[i].structure = i === keys.length - 1 ? "└" : "├";
+            }
+        }
+        for (const key of fastfetchKey.array) {
             key.textpadding = maxPadding;
             key.update();
-        });
+        }
     }
 }
