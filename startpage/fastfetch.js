@@ -5,9 +5,7 @@ export class fastfetchLine {
         const { keyConfig, valueConfig } = config;
 
         this.key = new fastfetchKey(keyConfig);
-        this.value = {
-            el: make("span", valueConfig),
-        };
+        this.value = new fastfetchValue(valueConfig);
         this.wrapper = make("span", { className: "command-line" }, [
             this.key.el,
             this.value.el,
@@ -22,6 +20,16 @@ export class fastfetchLine {
             fastfetchKey.array.splice(toRemoveIdx, 1);
             fastfetchKey.update();
         }
+    }
+}
+
+class fastfetchValue {
+    constructor({ textContent, href }) {
+        if (href) {
+            this.el = make("a", { href });
+            return this;
+        }
+        this.el = make("span", { textContent });
     }
 }
 

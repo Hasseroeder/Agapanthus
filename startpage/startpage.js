@@ -4,17 +4,23 @@ import { fastfetchLine } from "/startpage/fastfetch.js";
 
 const fetchImage = document.getElementById("fastfetch-image");
 const fetchTextWrapper = document.querySelector(".fetch-text-wrapper");
-const imageLinks = document.querySelector(".image-links");
 const tempLine = new fastfetchLine({
     keyConfig: {
         category: "Image",
         emoji: "",
         textContent: "Request",
     },
-    valueConfig: { textContent: "in progress" },
+    valueConfig: {
+        textContent: "in progress",
+    },
 });
-imageLinks.append(tempLine.wrapper);
 try {
+    const headerLine = make("span", {
+        className: "command-line",
+        textContent: "Image",
+    });
+    fetchTextWrapper.append(headerLine, tempLine.wrapper);
+
     const konachanReq = await fetch("https://antix1.transaero.space/api/", {
         method: "GET",
         headers: {
@@ -24,28 +30,26 @@ try {
     const { src, id, source } = await konachanReq.json();
     tempLine.remove();
 
-    const linkObjs = [
-        {
-            href: source,
+    const sourceLine = new fastfetchLine({
+        keyConfig: {
+            category: "Image",
+            emoji: "",
             textContent: "Source",
         },
-        {
-            href: "https://konachan.net/post/show/" + id,
+        valueConfig: { textContent: source, href: source },
+    });
+    const konachanLine = new fastfetchLine({
+        keyConfig: {
+            category: "Image",
+            emoji: "",
             textContent: "Konachan",
         },
-    ];
-    linkObjs.forEach((linkObj, i) => {
-        const commandLine = make("div", {
-            className: "command-line",
-        });
-        const span = make("span", {
-            textContent: i == linkObjs.length - 1 ? "└   " : "├   ",
-        });
-        const a = make("a", linkObj);
-        span.append(a);
-        commandLine.append(span);
-        imageLinks.append(commandLine);
+        valueConfig: {
+            textContent: "https://konachan.net/post/show/" + id,
+            href: "https://konachan.net/post/show/" + id,
+        },
     });
+    fetchTextWrapper.append(sourceLine.wrapper, konachanLine.wrapper);
     fetchImage.referrerPolicy = "no-referrer";
     fetchImage.src = src;
 } catch (error) {
@@ -75,181 +79,203 @@ function updateFingerprinting(config) {
     Array.from(document.querySelectorAll(".fastfetch-separator")).forEach(
         (el) => (el.textContent = "─".repeat(hostname.length)),
     );
-
-    const OSicon =
-        {
-            linux: "󰌽",
-            android: "󰀲",
-            windows: "󰨡",
-            ios: "",
-            macos: "",
-        }[fingerPrintInfo.os.name.toLowerCase()] ?? "";
-
-    const OSline = new fastfetchLine({
-        keyConfig: {
-            category: "Platform",
-            emoji: OSicon,
-            textContent: "OS",
-        },
-        valueConfig: {
-            textContent:
-                fingerPrintInfo.platform.type +
-                " " +
-                fingerPrintInfo.os.name.toLowerCase(),
-        },
-    });
-    document.querySelector(".os").append(OSline.wrapper);
-
-    const localeLine = new fastfetchLine({
-        keyConfig: {
-            category: "Platform",
-            emoji: "",
-            textContent: "locale",
-        },
-        valueConfig: {
-            textContent: fingerPrintInfo.language,
-        },
-    });
-    document.querySelector(".locale").append(localeLine.wrapper);
-
-    const clockContainer = document.querySelector(".clock-container");
-    const timeConfig = fetchModules.find((module) => module.slug == "time");
-    timeConfig.data.forEach((tz, i) => {
-        const local = new Date();
-        const utc = new Date(
-            local.toLocaleString("en-US", { timeZone: "UTC" }),
-        );
-        const zoned = new Date(
-            local.toLocaleString("en-US", { timeZone: tz.timeZone }),
-        );
-        const utcOffset = (zoned - utc) / 60000 / 60;
-        const utcString = new Intl.NumberFormat("en-US", {
-            signDisplay: "always",
-        }).format(utcOffset);
-
-        const region = tz.timeZone.split("/")[0];
-        const globeIcon =
+    {
+        const OSicon =
             {
-                Africa: "",
-                America: "",
-                Asia: "",
-                Europe: "",
-            }[region] ?? "󰊷";
+                linux: "󰌽",
+                android: "󰀲",
+                windows: "󰨡",
+                ios: "",
+                macos: "",
+            }[fingerPrintInfo.os.name.toLowerCase()] ?? "";
 
-        const clockLine = new fastfetchLine({
+        const headerLine = make("span", {
+            className: "command-line",
+            textContent: "Image",
+        });
+        const OSline = new fastfetchLine({
             keyConfig: {
-                category: "Time",
-                emoji: "󰃶",
-                textContent: tz.airport + " UTC" + utcString,
+                category: "Platform",
+                emoji: OSicon,
+                textContent: "OS",
             },
             valueConfig: {
-                textContent: new Date().toLocaleTimeString("en-US", tz),
+                textContent:
+                    fingerPrintInfo.platform.type +
+                    " " +
+                    fingerPrintInfo.os.name.toLowerCase(),
             },
         });
-        clockContainer.append(clockLine.wrapper);
 
-        tz.update = () =>
-            (clockLine.value.el.textContent = new Date().toLocaleTimeString(
-                "en-US",
-                tz,
-            ));
-        tz.update();
-        tz.interval = setInterval(tz.update, 10 * 1000);
-    });
+        const localeLine = new fastfetchLine({
+            keyConfig: {
+                category: "Platform",
+                emoji: "",
+                textContent: "locale",
+            },
+            valueConfig: {
+                textContent: fingerPrintInfo.language,
+            },
+        });
+        fetchTextWrapper.append(headerLine, OSline.wrapper, localeLine.wrapper);
+    }
+    {
+        const headerLine = make("span", {
+            className: "command-line",
+            textContent: "Time",
+        });
+        fetchTextWrapper.append(headerLine);
+        const timeConfig = fetchModules.find((module) => module.slug == "time");
+        timeConfig.data.timezones.forEach((tz, i) => {
+            const local = new Date();
+            const utc = new Date(
+                local.toLocaleString("en-US", { timeZone: "UTC" }),
+            );
+            const zoned = new Date(
+                local.toLocaleString("en-US", { timeZone: tz.timeZone }),
+            );
+            const utcOffset = (zoned - utc) / 60000 / 60;
+            const utcString = new Intl.NumberFormat("en-US", {
+                signDisplay: "always",
+            }).format(utcOffset);
 
+            const region = tz.timeZone.split("/")[0];
+            const globeIcon =
+                {
+                    Africa: "",
+                    America: "",
+                    Asia: "",
+                    Europe: "",
+                }[region] ?? "󰊷";
+
+            const clockLine = new fastfetchLine({
+                keyConfig: {
+                    category: "Time",
+                    emoji: "󰃶",
+                    textContent: tz.airport + " UTC" + utcString,
+                },
+                valueConfig: {
+                    textContent: new Date().toLocaleTimeString("en-US", tz),
+                },
+            });
+            fetchTextWrapper.append(clockLine.wrapper);
+
+            tz.update = () =>
+                (clockLine.value.el.textContent = new Date().toLocaleTimeString(
+                    "en-US",
+                    tz,
+                ));
+            tz.update();
+            tz.interval = setInterval(tz.update, 10 * 1000);
+        });
+    }
     async function updateLocation() {
         try {
             const response = await fetch("https://ipinfo.io/json");
             const data = await response.json();
-            const ipLine = new fastfetchLine({
-                keyConfig: {
-                    category: "Connection",
-                    emoji: "󰌘",
-                    textContent: "IPv4",
-                },
-                valueConfig: { textContent: data.ip },
-            });
-            document.querySelector(".ip").append(ipLine.wrapper);
-
-            const locationLine = new fastfetchLine({
-                keyConfig: {
-                    category: "Connection",
-                    emoji: "",
-                    textContent: "Location",
-                },
-                valueConfig: {
-                    textContent:
-                        data.city + " " + data.region + " " + data.country,
-                },
-            });
-            document.querySelector(".location").append(locationLine.wrapper);
-
-            const weatherContainer =
-                document.querySelector(".weather-container");
-            const tempLine = new fastfetchLine({
-                keyConfig: {
-                    category: "Weather",
-                    emoji: "󰃶",
-                    textContent: "Request",
-                },
-                valueConfig: { textContent: "in progress" },
-            });
-            weatherContainer.append(tempLine.wrapper);
-            try {
-                const metroAPI = "https://api.open-meteo.com/v1/forecast?";
-                const [latitude, longitude] = data.loc.split(",");
-                const options = [
-                    "latitude=" + latitude,
-                    "longitude=" + longitude,
-                    "daily=" +
-                        [
-                            "temperature_2m_max",
-                            "temperature_2m_min",
-                            "weather_code",
-                            "precipitation_probability_max",
-                        ].join(","),
-                    "timezone=auto",
-                    "forecast_days=3",
-                ].join("&");
-                const constructedURL = metroAPI + options;
-                const [weatherCodes, weatherData] = await Promise.all([
-                    weatherCodesPromise,
-                    loadJson(constructedURL),
-                ]);
-                tempLine.remove();
-                const dailyData = weatherData.daily;
-                dailyData.time.forEach((day, i) => {
-                    const date = new Date(day);
-                    const weatherCode = weatherCodes[dailyData.weather_code[i]];
-                    const rainStr =
-                        weatherCode +
-                        " " +
-                        `(${dailyData.precipitation_probability_max[i]}% precip.)`;
-                    const tempStr =
-                        ` ${dailyData.temperature_2m_max[i]}°C`.padEnd(10) +
-                        ` ${dailyData.temperature_2m_min[i]}°C`;
-
-                    const line = new fastfetchLine({
-                        keyConfig: {
-                            category: "Weather",
-                            emoji: "󰃶",
-                            textContent: date.toLocaleString("en-GB", {
-                                weekday: "short",
-                                month: "2-digit",
-                                day: "2-digit",
-                            }),
-                        },
-                        valueConfig: {
-                            textContent: rainStr.padEnd(35) + tempStr,
-                        },
-                    });
-
-                    weatherContainer.append(line.wrapper);
+            {
+                const headerLine = make("span", {
+                    className: "command-line",
+                    textContent: "Connected from",
                 });
-                console.log(weatherData);
-            } catch (error) {
-                tempLine.value.el.textContent = "failed";
-                console.error("Error fetching weather:", error);
+
+                const ipLine = new fastfetchLine({
+                    keyConfig: {
+                        category: "Connection",
+                        emoji: "󰌘",
+                        textContent: "IPv4",
+                    },
+                    valueConfig: { textContent: data.ip },
+                });
+
+                const locationLine = new fastfetchLine({
+                    keyConfig: {
+                        category: "Connection",
+                        emoji: "",
+                        textContent: "Location",
+                    },
+                    valueConfig: {
+                        textContent:
+                            data.city + " " + data.region + " " + data.country,
+                    },
+                });
+                fetchTextWrapper.append(
+                    headerLine,
+                    ipLine.wrapper,
+                    locationLine.wrapper,
+                );
+            }
+            {
+                const headerLine = make("span", {
+                    className: "command-line",
+                    textContent: "Local Weather",
+                });
+                const tempLine = new fastfetchLine({
+                    keyConfig: {
+                        category: "Weather",
+                        emoji: "󰃶",
+                        textContent: "Request",
+                    },
+                    valueConfig: { textContent: "in progress" },
+                });
+                fetchTextWrapper.append(headerLine, tempLine.wrapper);
+                try {
+                    const metroAPI = "https://api.open-meteo.com/v1/forecast?";
+                    const [latitude, longitude] = data.loc.split(",");
+                    const options = [
+                        "latitude=" + latitude,
+                        "longitude=" + longitude,
+                        "daily=" +
+                            [
+                                "temperature_2m_max",
+                                "temperature_2m_min",
+                                "weather_code",
+                                "precipitation_probability_max",
+                            ].join(","),
+                        "timezone=auto",
+                        "forecast_days=3",
+                    ].join("&");
+                    const constructedURL = metroAPI + options;
+                    const [weatherCodes, weatherData] = await Promise.all([
+                        weatherCodesPromise,
+                        loadJson(constructedURL),
+                    ]);
+                    tempLine.remove();
+                    const dailyData = weatherData.daily;
+                    dailyData.time.forEach((day, i) => {
+                        const date = new Date(day);
+                        const weatherCode =
+                            weatherCodes[dailyData.weather_code[i]];
+                        const rainStr =
+                            weatherCode +
+                            " " +
+                            `(${dailyData.precipitation_probability_max[i]}% precip.)`;
+                        const tempStr =
+                            ` ${dailyData.temperature_2m_max[i]}°C`.padEnd(
+                                10,
+                            ) + ` ${dailyData.temperature_2m_min[i]}°C`;
+
+                        const line = new fastfetchLine({
+                            keyConfig: {
+                                category: "Weather",
+                                emoji: "󰃶",
+                                textContent: date.toLocaleString("en-GB", {
+                                    weekday: "short",
+                                    month: "2-digit",
+                                    day: "2-digit",
+                                }),
+                            },
+                            valueConfig: {
+                                textContent: rainStr.padEnd(35) + tempStr,
+                            },
+                        });
+
+                        fetchTextWrapper.append(line.wrapper);
+                    });
+                } catch (error) {
+                    tempLine.value.el.textContent = "failed";
+                    console.error("Error fetching weather:", error);
+                }
             }
         } catch (error) {
             console.error("Error fetching IP address:", error);
@@ -273,29 +299,32 @@ const defaultConfig = {
         },
         {
             slug: "time",
-            data: [
-                {
-                    airport: "SLC",
-                    timeZone: "America/Denver",
-                    hour12: false,
-                    hour: "2-digit",
-                    minute: "2-digit",
-                },
-                {
-                    airport: "NYC",
-                    timeZone: "America/New_York",
-                    hour12: false,
-                    hour: "2-digit",
-                    minute: "2-digit",
-                },
-                {
-                    airport: "BER",
-                    timeZone: "Europe/Berlin",
-                    hour12: false,
-                    hour: "2-digit",
-                    minute: "2-digit",
-                },
-            ],
+            data: {
+                header: "Time",
+                timezones: [
+                    {
+                        airport: "SLC",
+                        timeZone: "America/Denver",
+                        hour12: false,
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    },
+                    {
+                        airport: "NYC",
+                        timeZone: "America/New_York",
+                        hour12: false,
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    },
+                    {
+                        airport: "BER",
+                        timeZone: "Europe/Berlin",
+                        hour12: false,
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    },
+                ],
+            },
         },
     ],
 };

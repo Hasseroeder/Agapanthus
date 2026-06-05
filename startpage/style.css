@@ -97,7 +97,11 @@ a:hover {
     border-top: 2px solid #333;
 }
 
-.clock-container,
-.weather-container {
+.fetch-text-wrapper {
+    display: grid;
+    height: min-content;
+}
+
+.clock-container {
     display: grid;
 }
