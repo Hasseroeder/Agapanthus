@@ -73,7 +73,7 @@ const fastfetchModuleRegistry = {
             const el = createModuleElement(context);
             appendHeader(el, this.data.header ?? "Image");
 
-            const tempLine = makeProgressLine({ emoji: "" });
+            const tempLine = makeProgressLine(this.data);
             el.append(tempLine.wrapper);
 
             const fetchImage = make("img", {
@@ -91,12 +91,10 @@ const fastfetchModuleRegistry = {
             })
                 .then((response) => response.json())
                 .then(({ src, id, source }) => {
-                    tempLine.remove();
-
                     const sourceLine = new fastfetchLine({
                         keyConfig: {
                             category: "Image",
-                            emoji: "",
+                            emoji: this.data.emoji,
                             textContent: "Source",
                         },
                         valueConfig: { textContent: source, href: source },
@@ -104,7 +102,7 @@ const fastfetchModuleRegistry = {
                     const konachanLine = new fastfetchLine({
                         keyConfig: {
                             category: "Image",
-                            emoji: "",
+                            emoji: this.data.emoji,
                             textContent: "Konachan",
                         },
                         valueConfig: {
@@ -112,6 +110,7 @@ const fastfetchModuleRegistry = {
                             href: "https://konachan.net/post/show/" + id,
                         },
                     });
+                    tempLine.remove();
                     el.append(sourceLine.wrapper, konachanLine.wrapper);
                     fetchImage.src = src;
                 })
@@ -161,11 +160,19 @@ const fastfetchModuleRegistry = {
 
             this.data.timezones.forEach((tz) => {
                 const utcString = getUtcOffsetString(tz.timeZone);
+                const region = tz.timeZone.split("/")[0];
+                const globeIcon =
+                    {
+                        Africa: "",
+                        America: "",
+                        Asia: "",
+                        Europe: "",
+                    }[region] ?? "󰊷";
 
                 const clockLine = new fastfetchLine({
                     keyConfig: {
                         category: "Time",
-                        emoji: "󰃶",
+                        emoji: globeIcon,
                         textContent: tz.airport + " UTC" + utcString,
                     },
                     valueConfig: {
@@ -187,12 +194,11 @@ const fastfetchModuleRegistry = {
             const el = createModuleElement(context);
             appendHeader(el, this.data.header ?? "Connected from");
 
-            const tempLine = makeProgressLine({ emoji: "󰃶" });
+            const tempLine = makeProgressLine(this.data);
             el.append(tempLine.wrapper);
 
             getLocation(context)
                 .then((data) => {
-                    tempLine.remove();
                     const ipLine = new fastfetchLine({
                         keyConfig: {
                             category: "Connection",
@@ -217,6 +223,7 @@ const fastfetchModuleRegistry = {
                                 data.country,
                         },
                     });
+                    tempLine.remove();
                     el.append(ipLine.wrapper, locationLine.wrapper);
                 })
                 .catch((error) => {
@@ -230,7 +237,7 @@ const fastfetchModuleRegistry = {
             const el = createModuleElement(context);
             appendHeader(el, this.data.header ?? "Local Weather");
 
-            const tempLine = makeProgressLine({ emoji: "󰃶" });
+            const tempLine = makeProgressLine(this.data);
             el.append(tempLine.wrapper);
 
             getLocation(context)
@@ -258,7 +265,6 @@ const fastfetchModuleRegistry = {
                     ]);
                 })
                 .then(([weatherCodes, weatherData]) => {
-                    tempLine.remove();
                     const dailyData = weatherData.daily;
                     dailyData.time.forEach((day, i) => {
                         const date = new Date(day);
@@ -276,7 +282,7 @@ const fastfetchModuleRegistry = {
                         const line = new fastfetchLine({
                             keyConfig: {
                                 category: "Weather",
-                                emoji: "󰃶",
+                                emoji: this.data.emoji,
                                 textContent: date.toLocaleString("en-GB", {
                                     weekday: "short",
                                     month: "2-digit",
@@ -287,7 +293,7 @@ const fastfetchModuleRegistry = {
                                 textContent: rainStr.padEnd(35) + tempStr,
                             },
                         });
-
+                        tempLine.remove();
                         el.append(line.wrapper);
                     });
                 })

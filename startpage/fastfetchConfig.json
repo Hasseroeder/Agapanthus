@@ -8,19 +8,22 @@
         {
             "slug": "image",
             "data": {
-                "header": "Image"
+                "header": "Image",
+                "emoji": ""
             }
         },
         {
             "slug": "platform",
             "data": {
-                "header": "Platform"
+                "header": "Platform",
+                "emoji": "󰌽"
             }
         },
         {
             "slug": "time",
             "data": {
                 "header": "Time",
+                "emoji": "󰃶",
                 "timezones": [
                     {
                         "airport": "SLC",
@@ -49,12 +52,14 @@
         {
             "slug": "connection",
             "data": {
-                "header": "Connected from"
+                "header": "Connected from",
+                "emoij": "󰌘"
             }
         },
         {
             "slug": "weather",
             "data": {
+                "emoji": "󰃶",
                 "header": "Local Weather",
                 "mode": "ip",
                 "latitude": null,
