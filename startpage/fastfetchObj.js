@@ -1,10 +1,12 @@
 import { make } from "../js/util/injectionUtil.js";
 
 export class fastfetchLine {
-    constructor({ category, emoji, key, value }) {
-        this.keyObj = new fastfetchKey({ category, emoji, key });
+    constructor(config) {
+        const { keyConfig, valueConfig } = config;
+
+        this.keyObj = new fastfetchKey(keyConfig);
         this.valueObj = {
-            el: make("span", { textContent: value }),
+            el: make("span", valueConfig),
         };
         this.wrapper = make("span", { className: "command-line" }, [
             this.keyObj.el,
@@ -24,11 +26,11 @@ export class fastfetchLine {
 }
 
 class fastfetchKey {
-    constructor({ category, emoji, key }) {
+    constructor({ category, emoji, textContent }) {
         this.category = category;
         this._emoji = emoji;
-        this._key = key;
-        this.textpadding = key.length;
+        this._textContent = textContent;
+        this.textpadding = textContent.length;
         this.structure = "├";
 
         this.el = make("span");
@@ -44,11 +46,11 @@ class fastfetchKey {
         this.update();
     }
 
-    get key() {
-        return this._key;
+    get textContent() {
+        return this._textContent;
     }
-    set key(key) {
-        this._key = key;
+    set textContent(textContent) {
+        this._textContent = textContent;
         this.update();
     }
 
@@ -56,7 +58,7 @@ class fastfetchKey {
         this.el.textContent =
             `${this.structure} ` +
             `${this._emoji}  ` +
-            this.key.padEnd(this.textpadding) +
+            this.textContent.padEnd(this.textpadding) +
             fastfetchKey.separator;
     }
     static array = [];

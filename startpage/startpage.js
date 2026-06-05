@@ -5,10 +5,12 @@ import { fastfetchLine } from "/startpage/fastfetchObj.js";
 const fetchImage = document.getElementById("fastfetch-image");
 const imageLinks = document.querySelector(".image-links");
 const tempLine = new fastfetchLine({
-    category: "Image",
-    emoji: "",
-    key: "Request",
-    value: "in progress",
+    keyConfig: {
+        category: "Image",
+        emoji: "",
+        textContent: "Request",
+    },
+    valueConfig: { textContent: "in progress" },
 });
 imageLinks.append(tempLine.wrapper);
 try {
@@ -82,21 +84,29 @@ function updateFingerprinting(config) {
         }[fingerPrintInfo.os.name.toLowerCase()] ?? "";
 
     const OSline = new fastfetchLine({
-        category: "Platform",
-        emoji: OSicon,
-        key: "OS",
-        value:
-            fingerPrintInfo.platform.type +
-            " " +
-            fingerPrintInfo.os.name.toLowerCase(),
+        keyConfig: {
+            category: "Platform",
+            emoji: OSicon,
+            textContent: "OS",
+        },
+        valueConfig: {
+            textContent:
+                fingerPrintInfo.platform.type +
+                " " +
+                fingerPrintInfo.os.name.toLowerCase(),
+        },
     });
     document.querySelector(".os").append(OSline.wrapper);
 
     const localeLine = new fastfetchLine({
-        category: "Platform",
-        emoji: "",
-        key: "locale",
-        value: fingerPrintInfo.language,
+        keyConfig: {
+            category: "Platform",
+            emoji: "",
+            textContent: "locale",
+        },
+        valueConfig: {
+            textContent: fingerPrintInfo.language,
+        },
     });
     document.querySelector(".locale").append(localeLine.wrapper);
 
@@ -124,10 +134,14 @@ function updateFingerprinting(config) {
             }[region] ?? "󰊷";
 
         const clockLine = new fastfetchLine({
-            category: "Time",
-            emoji: "󰃶",
-            key: tz.airport + " UTC" + utcString,
-            value: new Date().toLocaleTimeString("en-US", tz),
+            keyConfig: {
+                category: "Time",
+                emoji: "󰃶",
+                textContent: tz.airport + " UTC" + utcString,
+            },
+            valueConfig: {
+                textContent: new Date().toLocaleTimeString("en-US", tz),
+            },
         });
         clockContainer.append(clockLine.wrapper);
 
@@ -144,33 +158,38 @@ function updateFingerprinting(config) {
         try {
             const response = await fetch("https://ipinfo.io/json");
             const data = await response.json();
-            const ipEl = document.querySelector(".ip");
-            ipEl.append(
-                new fastfetchLine({
+            const ipLine = new fastfetchLine({
+                keyConfig: {
                     category: "Connection",
                     emoji: "󰌘",
-                    key: "IPv4",
-                    value: data.ip,
-                }).wrapper,
-            );
+                    textContent: "IPv4",
+                },
+                valueConfig: { textContent: data.ip },
+            });
+            document.querySelector(".ip").append(ipLine.wrapper);
 
-            const locationEl = document.querySelector(".location");
-            locationEl.append(
-                new fastfetchLine({
+            const locationLine = new fastfetchLine({
+                keyConfig: {
                     category: "Connection",
                     emoji: "",
-                    key: "Location",
-                    value: data.city + " " + data.region + " " + data.country,
-                }).wrapper,
-            );
+                    textContent: "Location",
+                },
+                valueConfig: {
+                    textContent:
+                        data.city + " " + data.region + " " + data.country,
+                },
+            });
+            document.querySelector(".location").append(locationLine.wrapper);
 
             const weatherContainer =
                 document.querySelector(".weather-container");
             const tempLine = new fastfetchLine({
-                category: "Weather",
-                emoji: "󰃶",
-                key: "Request",
-                value: "in progress",
+                keyConfig: {
+                    category: "Weather",
+                    emoji: "󰃶",
+                    textContent: "Request",
+                },
+                valueConfig: { textContent: "in progress" },
             });
             weatherContainer.append(tempLine.wrapper);
             try {
@@ -208,14 +227,18 @@ function updateFingerprinting(config) {
                         ` ${dailyData.temperature_2m_min[i]}°C`;
 
                     const line = new fastfetchLine({
-                        category: "Weather",
-                        emoji: "󰃶",
-                        key: date.toLocaleString("en-GB", {
-                            weekday: "short",
-                            month: "2-digit",
-                            day: "2-digit",
-                        }),
-                        value: rainStr.padEnd(35) + tempStr,
+                        keyConfig: {
+                            category: "Weather",
+                            emoji: "󰃶",
+                            textContent: date.toLocaleString("en-GB", {
+                                weekday: "short",
+                                month: "2-digit",
+                                day: "2-digit",
+                            }),
+                        },
+                        valueConfig: {
+                            textContent: rainStr.padEnd(35) + tempStr,
+                        },
                     });
 
                     weatherContainer.append(line.wrapper);
