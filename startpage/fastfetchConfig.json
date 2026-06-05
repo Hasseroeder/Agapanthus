@@ -1,0 +1,62 @@
+{
+    "userName": "user",
+    "fetchModules": [
+        {
+            "slug": "image",
+            "data": {
+                "header": "Image"
+            }
+        },
+        {
+            "slug": "platform",
+            "data": {
+                "header": "Platform"
+            }
+        },
+        {
+            "slug": "time",
+            "data": {
+                "header": "Time",
+                "timezones": [
+                    {
+                        "airport": "SLC",
+                        "timeZone": "America/Denver",
+                        "hour12": false,
+                        "hour": "2-digit",
+                        "minute": "2-digit"
+                    },
+                    {
+                        "airport": "NYC",
+                        "timeZone": "America/New_York",
+                        "hour12": false,
+                        "hour": "2-digit",
+                        "minute": "2-digit"
+                    },
+                    {
+                        "airport": "BER",
+                        "timeZone": "Europe/Berlin",
+                        "hour12": false,
+                        "hour": "2-digit",
+                        "minute": "2-digit"
+                    }
+                ]
+            }
+        },
+        {
+            "slug": "connection",
+            "data": {
+                "header": "Connected from"
+            }
+        },
+        {
+            "slug": "weather",
+            "data": {
+                "header": "Local Weather",
+                "mode": "ip",
+                "latitude": null,
+                "longitude": null,
+                "label": null
+            }
+        }
+    ]
+}
