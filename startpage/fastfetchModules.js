@@ -173,8 +173,19 @@ const fastfetchModuleRegistry = {
             const el = createModuleElement(context);
             appendHeader(el, this.data.header ?? "Connected from");
 
+            const tempLine = new fastfetchLine({
+                keyConfig: {
+                    category: "Weather",
+                    emoji: "󰃶",
+                    textContent: "Request",
+                },
+                valueConfig: { textContent: "in progress" },
+            });
+            el.append(tempLine.wrapper);
+
             getLocation(context)
                 .then((data) => {
+                    tempLine.remove();
                     const ipLine = new fastfetchLine({
                         keyConfig: {
                             category: "Connection",
@@ -202,6 +213,7 @@ const fastfetchModuleRegistry = {
                     el.append(ipLine.wrapper, locationLine.wrapper);
                 })
                 .catch((error) => {
+                    tempLine.value.el.textContent = "failed";
                     console.error("Error fetching IP address:", error);
                 });
         },
