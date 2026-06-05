@@ -26,7 +26,7 @@ export class fastfetchLine {
 class fastfetchValue {
     constructor({ textContent, href }) {
         if (href) {
-            this.el = make("a", { href });
+            this.el = make("a", { textContent, href });
             return this;
         }
         this.el = make("span", { textContent });
