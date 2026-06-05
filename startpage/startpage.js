@@ -1,6 +1,6 @@
 import { loadJson } from "/js/util/jsonUtil.js";
 import { make } from "/js/util/injectionUtil.js";
-import { fastfetchLine } from "/startpage/fastfetchObj.js";
+import { fastfetchLine } from "/startpage/fastfetch.js";
 
 const fetchImage = document.getElementById("fastfetch-image");
 const fetchTextWrapper = document.querySelector(".fetch-text-wrapper");
