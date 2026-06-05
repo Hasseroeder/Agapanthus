@@ -4,6 +4,17 @@ import { fastfetchLine } from "/startpage/fastfetch.js";
 
 const weatherCodesPromise = loadJson("/startpage/media/weather_codes.json");
 
+const makeProgressLine = ({ emoji, textContent }) =>
+    new fastfetchLine({
+        keyConfig: {
+            emoji: emoji ?? "",
+            textContent: textContent ?? "Module",
+        },
+        valueConfig: {
+            textContent: "in progress",
+        },
+    });
+
 function createModuleElement(context) {
     const el = make("div", { className: "fastfetch-module" });
     context.fetchTextWrapper.append(el);
@@ -62,16 +73,7 @@ const fastfetchModuleRegistry = {
             const el = createModuleElement(context);
             appendHeader(el, this.data.header ?? "Image");
 
-            const tempLine = new fastfetchLine({
-                keyConfig: {
-                    category: "Image",
-                    emoji: "",
-                    textContent: "Request",
-                },
-                valueConfig: {
-                    textContent: "in progress",
-                },
-            });
+            const tempLine = makeProgressLine({ emoji: "" });
             el.append(tempLine.wrapper);
 
             fetch("https://antix1.transaero.space/api/", {
@@ -114,7 +116,7 @@ const fastfetchModuleRegistry = {
                 })
                 .catch((error) => {
                     tempLine.value.el.textContent = "failed";
-                    console.error("reverse proxy unreachable:", error);
+                    console.error("Error loading module:", error);
                     context.wrapper.prepend(
                         make("img", {
                             src: "/startpage/media/backupImage.jpg",
@@ -190,14 +192,7 @@ const fastfetchModuleRegistry = {
             const el = createModuleElement(context);
             appendHeader(el, this.data.header ?? "Connected from");
 
-            const tempLine = new fastfetchLine({
-                keyConfig: {
-                    category: "Weather",
-                    emoji: "󰃶",
-                    textContent: "Request",
-                },
-                valueConfig: { textContent: "in progress" },
-            });
+            const tempLine = makeProgressLine({ emoji: "󰃶" });
             el.append(tempLine.wrapper);
 
             getLocation(context)
@@ -231,7 +226,7 @@ const fastfetchModuleRegistry = {
                 })
                 .catch((error) => {
                     tempLine.value.el.textContent = "failed";
-                    console.error("Error fetching IP address:", error);
+                    console.error("Error loading module:", error);
                 });
         },
     },
@@ -240,14 +235,7 @@ const fastfetchModuleRegistry = {
             const el = createModuleElement(context);
             appendHeader(el, this.data.header ?? "Local Weather");
 
-            const tempLine = new fastfetchLine({
-                keyConfig: {
-                    category: "Weather",
-                    emoji: "󰃶",
-                    textContent: "Request",
-                },
-                valueConfig: { textContent: "in progress" },
-            });
+            const tempLine = makeProgressLine({ emoji: "󰃶" });
             el.append(tempLine.wrapper);
 
             getLocation(context)
@@ -310,7 +298,7 @@ const fastfetchModuleRegistry = {
                 })
                 .catch((error) => {
                     tempLine.value.el.textContent = "failed";
-                    console.error("Error fetching weather:", error);
+                    console.error("Error loading module:", error);
                 });
         },
     },

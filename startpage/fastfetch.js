@@ -81,7 +81,9 @@ class fastfetchKey {
         }
         for (const [, keys] of groups) {
             keys.forEach((key, i) => {
-                key.structure = i === keys.length - 1 ? "└" : "├";
+                if (i === keys.length - 1 || key.category === undefined)
+                    key.structure = "└";
+                else key.structure = "├";
             });
         }
         for (const key of fastfetchKey.array) {
