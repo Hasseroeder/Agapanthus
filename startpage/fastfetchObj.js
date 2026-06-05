@@ -17,7 +17,7 @@ export class fastfetchLine {
             (key) => key === this.keyObj,
         );
         if (toRemoveIdx !== -1) {
-            fastfetchKey.array.splice(idx, 1);
+            fastfetchKey.array.splice(toRemoveIdx, 1);
             fastfetchKey.update();
         }
     }
@@ -70,9 +70,9 @@ class fastfetchKey {
             groups.get(key.category).push(key);
         }
         for (const [, keys] of groups) {
-            for (let i = 0; i < keys.length; i++) {
-                keys[i].structure = i === keys.length - 1 ? "└" : "├";
-            }
+            keys.forEach((key, i) => {
+                key.structure = i === keys.length - 1 ? "└" : "├";
+            });
         }
         for (const key of fastfetchKey.array) {
             key.textpadding = maxPadding;

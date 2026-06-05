@@ -45,9 +45,9 @@ try {
     });
     fetchImage.referrerPolicy = "no-referrer";
     fetchImage.src = src;
-} catch {
+} catch (error) {
     tempLine.valueObj.el.textContent = "failed";
-    console.error("reverse proxy unreachable.");
+    console.error("reverse proxy unreachable:", error);
     fetchImage.src = "/startpage/media/backupImage.jpg";
 }
 
@@ -221,9 +221,9 @@ function updateFingerprinting(config) {
                     weatherContainer.append(line.wrapper);
                 });
                 console.log(weatherData);
-            } catch {
+            } catch (error) {
                 tempLine.valueObj.el.textContent = "failed";
-                console.error("Error fetching weather");
+                console.error("Error fetching weather:", error);
             }
         } catch (error) {
             console.error("Error fetching IP address:", error);
