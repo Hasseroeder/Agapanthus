@@ -2,6 +2,10 @@
     "userName": "user",
     "fetchModules": [
         {
+            "slug": "hostname",
+            "data": {}
+        },
+        {
             "slug": "image",
             "data": {
                 "header": "Image"

@@ -6,16 +6,6 @@ const wrapper = document.querySelector(".fastfetch-wrapper");
 const fetchTextWrapper = document.querySelector(".fetch-text-wrapper");
 const defaultConfig = await loadJson("/startpage/fastfetchConfig.json");
 
-function makeFastfetchHeader(hostname) {
-    const hostnameLine = make("div", { className: "command-line" }, [
-        make("span", { textContent: hostname }),
-    ]);
-    const separatorLine = make("div", { className: "command-line" }, [
-        make("span", { textContent: "─".repeat(hostname.length) }),
-    ]);
-    return [hostnameLine, separatorLine];
-}
-
 function updateFingerprinting(config) {
     const fingerPrintInfo = {
         ...bowser.getParser(window.navigator.userAgent).parsedResult,
@@ -33,14 +23,13 @@ function updateFingerprinting(config) {
         (el) => (el.textContent = hostname),
     );
 
-    fetchTextWrapper.append(...makeFastfetchHeader(hostname));
-
     const fetchModules = createFetchModules(config.fetchModules);
     const context = {
         config,
         wrapper,
         fetchTextWrapper,
         fingerPrintInfo,
+        hostname,
     };
     fetchModules.forEach((module) => module.render(context));
 }

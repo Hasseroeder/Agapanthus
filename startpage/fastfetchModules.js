@@ -50,6 +50,13 @@ function getOSIcon(osName) {
 }
 
 const fastfetchModuleRegistry = {
+    hostname: {
+        render(context) {
+            const el = createModuleElement(context);
+            appendHeader(el, context.hostname);
+            appendHeader(el, "-".repeat(context.hostname.length));
+        },
+    },
     image: {
         render(context) {
             const el = createModuleElement(context);
