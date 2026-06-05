@@ -2,7 +2,7 @@ import { loadJson } from "/js/util/jsonUtil.js";
 import { make } from "/js/util/injectionUtil.js";
 import { createFetchModules } from "/startpage/fastfetchModules.js";
 
-const fetchImage = document.getElementById("fastfetch-image");
+const wrapper = document.querySelector(".fastfetch-wrapper");
 const fetchTextWrapper = document.querySelector(".fetch-text-wrapper");
 const defaultConfig = await loadJson("/startpage/fastfetchConfig.json");
 
@@ -38,7 +38,7 @@ function updateFingerprinting(config) {
     const fetchModules = createFetchModules(config.fetchModules);
     const context = {
         config,
-        fetchImage,
+        wrapper,
         fetchTextWrapper,
         fingerPrintInfo,
     };

@@ -97,13 +97,23 @@ const fastfetchModuleRegistry = {
                         },
                     });
                     el.append(sourceLine.wrapper, konachanLine.wrapper);
-                    context.fetchImage.referrerPolicy = "no-referrer";
-                    context.fetchImage.src = src;
+                    context.wrapper.prepend(
+                        make("img", {
+                            referrerPolicy: "no-referrer",
+                            src,
+                            className: "fastfetch-image",
+                        }),
+                    );
                 })
                 .catch((error) => {
                     tempLine.value.el.textContent = "failed";
                     console.error("reverse proxy unreachable:", error);
-                    context.fetchImage.src = "/startpage/media/backupImage.jpg";
+                    context.wrapper.prepend(
+                        make("img", {
+                            src: "/startpage/media/backupImage.jpg",
+                            className: "fastfetch-image",
+                        }),
+                    );
                 });
         },
     },
