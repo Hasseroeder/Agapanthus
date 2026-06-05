@@ -4,19 +4,19 @@ export class fastfetchLine {
     constructor(config) {
         const { keyConfig, valueConfig } = config;
 
-        this.keyObj = new fastfetchKey(keyConfig);
-        this.valueObj = {
+        this.key = new fastfetchKey(keyConfig);
+        this.value = {
             el: make("span", valueConfig),
         };
         this.wrapper = make("span", { className: "command-line" }, [
-            this.keyObj.el,
-            this.valueObj.el,
+            this.key.el,
+            this.value.el,
         ]);
     }
     remove() {
         this.wrapper.remove();
         const toRemoveIdx = fastfetchKey.array.findIndex(
-            (key) => key === this.keyObj,
+            (key) => key === this.key,
         );
         if (toRemoveIdx !== -1) {
             fastfetchKey.array.splice(toRemoveIdx, 1);

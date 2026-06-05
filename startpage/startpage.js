@@ -49,7 +49,7 @@ try {
     fetchImage.referrerPolicy = "no-referrer";
     fetchImage.src = src;
 } catch (error) {
-    tempLine.valueObj.el.textContent = "failed";
+    tempLine.value.el.textContent = "failed";
     console.error("reverse proxy unreachable:", error);
     fetchImage.src = "/startpage/media/backupImage.jpg";
 }
@@ -149,7 +149,7 @@ function updateFingerprinting(config) {
         clockContainer.append(clockLine.wrapper);
 
         tz.update = () =>
-            (clockLine.valueObj.el.textContent = new Date().toLocaleTimeString(
+            (clockLine.value.el.textContent = new Date().toLocaleTimeString(
                 "en-US",
                 tz,
             ));
@@ -248,7 +248,7 @@ function updateFingerprinting(config) {
                 });
                 console.log(weatherData);
             } catch (error) {
-                tempLine.valueObj.el.textContent = "failed";
+                tempLine.value.el.textContent = "failed";
                 console.error("Error fetching weather:", error);
             }
         } catch (error) {
