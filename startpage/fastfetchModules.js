@@ -76,6 +76,13 @@ const fastfetchModuleRegistry = {
             const tempLine = makeProgressLine({ emoji: "" });
             el.append(tempLine.wrapper);
 
+            const fetchImage = make("img", {
+                src: "/startpage/media/backupImage.jpg",
+                className: "fastfetch-image",
+                referrerPolicy: "no-referrer",
+            });
+            context.wrapper.prepend(fetchImage);
+
             fetch("https://antix1.transaero.space/api/", {
                 method: "GET",
                 headers: {
@@ -106,23 +113,11 @@ const fastfetchModuleRegistry = {
                         },
                     });
                     el.append(sourceLine.wrapper, konachanLine.wrapper);
-                    context.wrapper.prepend(
-                        make("img", {
-                            referrerPolicy: "no-referrer",
-                            src,
-                            className: "fastfetch-image",
-                        }),
-                    );
+                    fetchImage.src = src;
                 })
                 .catch((error) => {
                     tempLine.value.el.textContent = "failed";
                     console.error("Error loading module:", error);
-                    context.wrapper.prepend(
-                        make("img", {
-                            src: "/startpage/media/backupImage.jpg",
-                            className: "fastfetch-image",
-                        }),
-                    );
                 });
         },
     },
