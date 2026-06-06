@@ -4,23 +4,6 @@ import { fastfetchLine } from "/startpage/fastfetch.js";
 
 const weatherCodesPromise = loadJson("/startpage/media/weather_codes.json");
 
-const makeProgressLine = ({ emoji, textContent }) =>
-    new fastfetchLine({
-        keyConfig: {
-            emoji: emoji ?? "",
-            textContent: textContent ?? "Module",
-        },
-        valueConfig: {
-            textContent: "in progress",
-        },
-    });
-
-function createModuleElement(context) {
-    const el = make("div", { className: "fastfetch-module" });
-    context.fetchTextWrapper.append(el);
-    return el;
-}
-
 function appendHeader(el, textContent) {
     el.append(
         make("span", {
@@ -63,18 +46,14 @@ function getOSIcon(osName) {
 const fastfetchModuleRegistry = {
     hostname: {
         render(context) {
-            const el = createModuleElement(context);
-            appendHeader(el, context.hostname);
-            appendHeader(el, "-".repeat(context.hostname.length));
+            appendHeader(this.el, context.hostname);
+            appendHeader(this.el, "-".repeat(context.hostname.length));
         },
     },
     image: {
-        render(context) {
-            const el = createModuleElement(context);
-            appendHeader(el, this.data.header ?? "Image");
-
-            const tempLine = makeProgressLine(this.data);
-            el.append(tempLine.wrapper);
+        async render(context) {
+            appendHeader(this.el, this.data.header ?? "Image");
+            this.el.append(this.progressLine.wrapper);
 
             const fetchImage = make("img", {
                 src: "/startpage/media/backupImage.jpg",
@@ -82,49 +61,47 @@ const fastfetchModuleRegistry = {
                 referrerPolicy: "no-referrer",
             });
             context.wrapper.prepend(fetchImage);
-
-            fetch("https://antix1.transaero.space/api/", {
-                method: "GET",
-                headers: {
-                    "x-api-key": "my_super_duper_mega_ultra_secure_API_key",
+            const antix1Fetch = await fetch(
+                "https://antix1.transaero.space/api/",
+                {
+                    method: "GET",
+                    headers: {
+                        "x-api-key": "my_super_duper_mega_ultra_secure_API_key",
+                    },
                 },
-            })
-                .then((response) => response.json())
-                .then(({ src, id, source }) => {
-                    const sourceLine = new fastfetchLine({
-                        keyConfig: {
-                            category: "Image",
-                            emoji: this.data.emoji,
-                            textContent: "Source",
-                        },
-                        valueConfig: { textContent: source, href: source },
-                    });
-                    const konachanLine = new fastfetchLine({
-                        keyConfig: {
-                            category: "Image",
-                            emoji: this.data.emoji,
-                            textContent: "Konachan",
-                        },
-                        valueConfig: {
-                            textContent: "https://konachan.net/post/show/" + id,
-                            href: "https://konachan.net/post/show/" + id,
-                        },
-                    });
-                    tempLine.remove();
-                    el.append(sourceLine.wrapper, konachanLine.wrapper);
-                    fetchImage.src = src;
-                })
-                .catch((error) => {
-                    tempLine.value.el.textContent = "failed";
-                    console.error("Error loading module:", error);
-                });
+            );
+
+            const response = await antix1Fetch.json();
+            const { src, id, source } = response;
+            const sourceLine = new fastfetchLine({
+                keyConfig: {
+                    category: "Image",
+                    emoji: this.data.emoji,
+                    textContent: "Source",
+                },
+                valueConfig: { textContent: source, href: source },
+            });
+            const konachanLine = new fastfetchLine({
+                keyConfig: {
+                    category: "Image",
+                    emoji: this.data.emoji,
+                    textContent: "Konachan",
+                },
+                valueConfig: {
+                    textContent: "https://konachan.net/post/show/" + id,
+                    href: "https://konachan.net/post/show/" + id,
+                },
+            });
+            this.progressLine.remove();
+            this.el.append(sourceLine.wrapper, konachanLine.wrapper);
+            fetchImage.src = src;
         },
     },
     platform: {
         render(context) {
             const fingerPrintInfo = context.fingerPrintInfo;
-            const el = createModuleElement(context);
-            appendHeader(el, this.data.header ?? "Platform");
+            appendHeader(this.el, this.data.header ?? "Platform");
+            this.el.append(this.progressLine.wrapper);
 
             const OSline = new fastfetchLine({
                 keyConfig: {
@@ -150,13 +127,13 @@ const fastfetchModuleRegistry = {
                     textContent: fingerPrintInfo.language,
                 },
             });
-            el.append(OSline.wrapper, localeLine.wrapper);
+            this.el.append(OSline.wrapper, localeLine.wrapper);
         },
     },
     time: {
         render(context) {
-            const el = createModuleElement(context);
-            appendHeader(el, this.data.header ?? "Time");
+            appendHeader(this.el, this.data.header ?? "Time");
+            this.el.append(this.progressLine.wrapper);
 
             this.data.timezones.forEach((tz) => {
                 const utcString = getUtcOffsetString(tz.timeZone);
@@ -179,7 +156,7 @@ const fastfetchModuleRegistry = {
                         textContent: new Date().toLocaleTimeString("en-US", tz),
                     },
                 });
-                el.append(clockLine.wrapper);
+                this.el.append(clockLine.wrapper);
 
                 const update = () =>
                     (clockLine.value.el.textContent =
@@ -190,117 +167,93 @@ const fastfetchModuleRegistry = {
         },
     },
     connection: {
-        render(context) {
-            const el = createModuleElement(context);
-            appendHeader(el, this.data.header ?? "Connected from");
+        async render(context) {
+            appendHeader(this.el, this.data.header ?? "Connected from");
+            this.el.append(this.progressLine.wrapper);
 
-            const tempLine = makeProgressLine(this.data);
-            el.append(tempLine.wrapper);
+            const locationData = await getLocation(context);
+            const ipLine = new fastfetchLine({
+                keyConfig: {
+                    category: "Connection",
+                    emoji: "󰌘",
+                    textContent: "IPv4",
+                },
+                valueConfig: { textContent: locationData.ip },
+            });
 
-            getLocation(context)
-                .then((data) => {
-                    const ipLine = new fastfetchLine({
-                        keyConfig: {
-                            category: "Connection",
-                            emoji: "󰌘",
-                            textContent: "IPv4",
-                        },
-                        valueConfig: { textContent: data.ip },
-                    });
-
-                    const locationLine = new fastfetchLine({
-                        keyConfig: {
-                            category: "Connection",
-                            emoji: "",
-                            textContent: "Location",
-                        },
-                        valueConfig: {
-                            textContent:
-                                data.city +
-                                " " +
-                                data.region +
-                                " " +
-                                data.country,
-                        },
-                    });
-                    tempLine.remove();
-                    el.append(ipLine.wrapper, locationLine.wrapper);
-                })
-                .catch((error) => {
-                    tempLine.value.el.textContent = "failed";
-                    console.error("Error loading module:", error);
-                });
+            const locationLine = new fastfetchLine({
+                keyConfig: {
+                    category: "Connection",
+                    emoji: "",
+                    textContent: "Location",
+                },
+                valueConfig: {
+                    textContent:
+                        locationData.city +
+                        " " +
+                        locationData.region +
+                        " " +
+                        locationData.country,
+                },
+            });
+            this.progressLine.remove();
+            this.el.append(ipLine.wrapper, locationLine.wrapper);
         },
     },
     weather: {
-        render(context) {
-            const el = createModuleElement(context);
-            appendHeader(el, this.data.header ?? "Local Weather");
+        async render(context) {
+            appendHeader(this.el, this.data.header ?? "Local Weather");
+            this.el.append(this.progressLine.wrapper);
 
-            const tempLine = makeProgressLine(this.data);
-            el.append(tempLine.wrapper);
+            const locationData = await getLocation(context);
+            const [latitude, longitude] = locationData.loc.split(",");
+            const metroAPI = "https://api.open-meteo.com/v1/forecast?";
+            const options = [
+                "latitude=" + (this.data.latitude ?? latitude),
+                "longitude=" + (this.data.longitude ?? longitude),
+                "daily=" +
+                    [
+                        "temperature_2m_max",
+                        "temperature_2m_min",
+                        "weather_code",
+                        "precipitation_probability_max",
+                    ].join(","),
+                "timezone=auto",
+                "forecast_days=3",
+            ].join("&");
+            const constructedURL = metroAPI + options;
 
-            getLocation(context)
-                .then((data) => {
-                    const [latitude, longitude] = data.loc.split(",");
-                    const metroAPI = "https://api.open-meteo.com/v1/forecast?";
-                    const options = [
-                        "latitude=" + (this.data.latitude ?? latitude),
-                        "longitude=" + (this.data.longitude ?? longitude),
-                        "daily=" +
-                            [
-                                "temperature_2m_max",
-                                "temperature_2m_min",
-                                "weather_code",
-                                "precipitation_probability_max",
-                            ].join(","),
-                        "timezone=auto",
-                        "forecast_days=3",
-                    ].join("&");
-                    const constructedURL = metroAPI + options;
+            const [weatherCodes, weatherData] = await Promise.all([
+                weatherCodesPromise,
+                loadJson(constructedURL),
+            ]);
+            const dailyData = weatherData.daily;
+            dailyData.time.forEach((day, i) => {
+                const date = new Date(day);
+                const weatherCode = weatherCodes[dailyData.weather_code[i]];
+                const rainStr =
+                    weatherCode +
+                    " " +
+                    `(${dailyData.precipitation_probability_max[i]}% precip.)`;
+                const tempStr =
+                    ` ${dailyData.temperature_2m_max[i]}°C`.padEnd(10) +
+                    ` ${dailyData.temperature_2m_min[i]}°C`;
 
-                    return Promise.all([
-                        weatherCodesPromise,
-                        loadJson(constructedURL),
-                    ]);
-                })
-                .then(([weatherCodes, weatherData]) => {
-                    const dailyData = weatherData.daily;
-                    dailyData.time.forEach((day, i) => {
-                        const date = new Date(day);
-                        const weatherCode =
-                            weatherCodes[dailyData.weather_code[i]];
-                        const rainStr =
-                            weatherCode +
-                            " " +
-                            `(${dailyData.precipitation_probability_max[i]}% precip.)`;
-                        const tempStr =
-                            ` ${dailyData.temperature_2m_max[i]}°C`.padEnd(
-                                10,
-                            ) + ` ${dailyData.temperature_2m_min[i]}°C`;
-
-                        const line = new fastfetchLine({
-                            keyConfig: {
-                                category: "Weather",
-                                emoji: this.data.emoji,
-                                textContent: date.toLocaleString("en-GB", {
-                                    weekday: "short",
-                                    month: "2-digit",
-                                    day: "2-digit",
-                                }),
-                            },
-                            valueConfig: {
-                                textContent: rainStr.padEnd(35) + tempStr,
-                            },
-                        });
-                        tempLine.remove();
-                        el.append(line.wrapper);
-                    });
-                })
-                .catch((error) => {
-                    tempLine.value.el.textContent = "failed";
-                    console.error("Error loading module:", error);
+                const line = new fastfetchLine({
+                    keyConfig: {
+                        category: "Weather",
+                        emoji: this.data.emoji,
+                        textContent: date.toLocaleString(
+                            ...this.data.dateFormat,
+                        ),
+                    },
+                    valueConfig: {
+                        textContent: rainStr.padEnd(35) + tempStr,
+                    },
                 });
+                this.progressLine.remove();
+                this.el.append(line.wrapper);
+            });
         },
     },
 };

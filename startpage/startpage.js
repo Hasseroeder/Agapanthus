@@ -1,6 +1,7 @@
 import { loadJson } from "/js/util/jsonUtil.js";
 import { make } from "/js/util/injectionUtil.js";
 import { createFetchModules } from "/startpage/fastfetchModules.js";
+import { fastfetchLine } from "/startpage/fastfetch.js";
 
 const wrapper = document.querySelector(".fastfetch-wrapper");
 const fetchTextWrapper = document.querySelector(".fetch-text-wrapper");
@@ -31,6 +32,28 @@ function updateFingerprinting(config) {
         fingerPrintInfo,
         hostname,
     };
-    fetchModules.forEach((module) => module.render(context));
+
+    fetchModules.forEach(async (module) => {
+        module.el = make("div", { className: "fastfetch-module" });
+        module.progressLine = new fastfetchLine({
+            keyConfig: {
+                emoji: module.data.emoji ?? "",
+                textContent: module.data.textContent ?? "Module",
+            },
+            valueConfig: {
+                textContent: "in progress",
+            },
+        });
+
+        fetchTextWrapper.append(module.el);
+
+        try {
+            await module.render(context);
+            module.progressLine.remove();
+        } catch (error) {
+            module.progressLine.value.el.textContent = "failed";
+            console.error("Error loading module:", error);
+        }
+    });
 }
 updateFingerprinting(defaultConfig);

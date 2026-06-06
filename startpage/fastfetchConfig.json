@@ -59,6 +59,14 @@
         {
             "slug": "weather",
             "data": {
+                "dateFormat": [
+                    "en-GB",
+                    {
+                        "weekday": "short",
+                        "month": "2-digit",
+                        "day": "2-digit"
+                    }
+                ],
                 "emoji": "󰃶",
                 "header": "Local Weather",
                 "mode": "ip",
