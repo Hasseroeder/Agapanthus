@@ -4,15 +4,6 @@ import { FastfetchModule, FastfetchLine } from "/startpage/fastfetch.js";
 
 const weatherCodesPromise = loadJson("/startpage/media/weather_codes.json");
 
-function appendHeader(el, textContent) {
-    el.append(
-        make("span", {
-            className: "command-line",
-            textContent,
-        }),
-    );
-}
-
 function getLocation(context) {
     context.locationPromise ??= fetch("https://ipinfo.io/json").then(
         (response) => response.json(),
@@ -33,10 +24,20 @@ function getUtcOffsetString(timeZone) {
 
 const renderFunctionRegistry = {
     header: async function (context) {
-        appendHeader(this.el, this.data.textContent);
+        this.el.append(
+            make("span", {
+                className: "command-line",
+                ...this.data,
+            }),
+        );
     },
     hostname: async function (context) {
-        appendHeader(this.el, context.hostname);
+        this.el.append(
+            make("span", {
+                className: "command-line",
+                textContent: context.hostname,
+            }),
+        );
     },
     image: async function (context) {
         this.el.append(this.progressLine.wrapper);
