@@ -45,13 +45,13 @@ function getOSIcon(osName) {
 
 const fastfetchModuleRegistry = {
     hostname: {
-        render(context) {
+        renderContent(context) {
             appendHeader(this.el, context.hostname);
             appendHeader(this.el, "-".repeat(context.hostname.length));
         },
     },
     image: {
-        async render(context) {
+        async renderContent(context) {
             appendHeader(this.el, this.data.header ?? "Image");
             this.el.append(this.progressLine.wrapper);
 
@@ -98,7 +98,7 @@ const fastfetchModuleRegistry = {
         },
     },
     platform: {
-        render(context) {
+        renderContent(context) {
             const fingerPrintInfo = context.fingerPrintInfo;
             appendHeader(this.el, this.data.header ?? "Platform");
             this.el.append(this.progressLine.wrapper);
@@ -131,7 +131,7 @@ const fastfetchModuleRegistry = {
         },
     },
     time: {
-        render(context) {
+        renderContent(context) {
             appendHeader(this.el, this.data.header ?? "Time");
             this.el.append(this.progressLine.wrapper);
 
@@ -167,7 +167,7 @@ const fastfetchModuleRegistry = {
         },
     },
     connection: {
-        async render(context) {
+        async renderContent(context) {
             appendHeader(this.el, this.data.header ?? "Connected from");
             this.el.append(this.progressLine.wrapper);
 
@@ -201,7 +201,7 @@ const fastfetchModuleRegistry = {
         },
     },
     weather: {
-        async render(context) {
+        async renderContent(context) {
             appendHeader(this.el, this.data.header ?? "Local Weather");
             this.el.append(this.progressLine.wrapper);
 
@@ -257,6 +257,31 @@ const fastfetchModuleRegistry = {
         },
     },
 };
+
+Object.values(fastfetchModuleRegistry).forEach((module) => {
+    module.tryRenderContent = async function (context) {
+        try {
+            await this.renderContent(context);
+            this.progressLine.remove();
+        } catch (error) {
+            this.progressLine.value.el.textContent = "failed";
+            console.error("Error loading module:", error);
+        }
+    };
+    module.init = function (context) {
+        this.el = make("div", { className: "fastfetch-module" });
+        this.progressLine = new fastfetchLine({
+            keyConfig: {
+                emoji: this.data.emoji ?? "",
+                textContent: this.data.textContent ?? "Module",
+            },
+            valueConfig: {
+                textContent: "in progress",
+            },
+        });
+        context.fetchTextWrapper.append(this.el);
+    };
+});
 
 export function createFetchModules(moduleConfigs) {
     return moduleConfigs.flatMap((moduleConfig) => {

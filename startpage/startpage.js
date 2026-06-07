@@ -7,7 +7,7 @@ const wrapper = document.querySelector(".fastfetch-wrapper");
 const fetchTextWrapper = document.querySelector(".fetch-text-wrapper");
 const defaultConfig = await loadJson("/startpage/fastfetchConfig.json");
 
-function updateFingerprinting(config) {
+async function updateFingerprinting(config) {
     const fingerPrintInfo = {
         ...bowser.getParser(window.navigator.userAgent).parsedResult,
         language: navigator.language || navigator.userLanguage,
@@ -33,27 +33,9 @@ function updateFingerprinting(config) {
         hostname,
     };
 
-    fetchModules.forEach(async (module) => {
-        module.el = make("div", { className: "fastfetch-module" });
-        module.progressLine = new fastfetchLine({
-            keyConfig: {
-                emoji: module.data.emoji ?? "",
-                textContent: module.data.textContent ?? "Module",
-            },
-            valueConfig: {
-                textContent: "in progress",
-            },
-        });
-
-        fetchTextWrapper.append(module.el);
-
-        try {
-            await module.render(context);
-            module.progressLine.remove();
-        } catch (error) {
-            module.progressLine.value.el.textContent = "failed";
-            console.error("Error loading module:", error);
-        }
-    });
+    //synchonous
+    fetchModules.forEach((module) => module.init(context));
+    //parallel
+    fetchModules.forEach((module) => module.tryRenderContent(context));
 }
 updateFingerprinting(defaultConfig);
