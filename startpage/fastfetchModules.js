@@ -42,27 +42,38 @@ const renderFunctionRegistry = {
     image: async function (context) {
         this.el.append(this.progressLine.wrapper);
 
-        const fetchImage = make("img", {
-            src: "/startpage/media/backupImage.jpg",
+        this.fetchImage = make("img", {
             className: "fastfetch-image",
             referrerPolicy: "no-referrer",
         });
-        context.wrapper.prepend(fetchImage);
-        const antix1Fetch = await fetch("https://antix1.transaero.space/api/", {
-            method: "GET",
-            headers: {
-                "x-api-key": "my_super_duper_mega_ultra_secure_API_key",
-            },
-        });
+        context.wrapper.prepend(this.fetchImage);
+        let imageData = {
+            src: "/startpage/media/backupImage.jpg",
+            id: 399022,
+            source: "https://www.pixiv.net/en/artworks/140831161",
+        };
+        try {
+            const antix1Fetch = await fetch(
+                "https://antix1.transaero.space/api/",
+                {
+                    method: "GET",
+                    headers: {
+                        "x-api-key": "my_super_duper_mega_ultra_secure_API_key",
+                    },
+                },
+            );
+            imageData = await antix1Fetch.json();
+        } catch {}
 
-        const response = await antix1Fetch.json();
-        const { src, id, source } = response;
         const sourceLine = new FastfetchLine({
             keyConfig: {
                 ...this.data.keyConfig,
                 textContent: "Source",
             },
-            valueConfig: { textContent: source, href: source },
+            valueConfig: {
+                textContent: imageData.source,
+                href: imageData.source,
+            },
         });
         const konachanLine = new FastfetchLine({
             keyConfig: {
@@ -70,12 +81,12 @@ const renderFunctionRegistry = {
                 textContent: "Konachan",
             },
             valueConfig: {
-                textContent: "https://konachan.net/post/show/" + id,
-                href: "https://konachan.net/post/show/" + id,
+                textContent: "https://konachan.net/post/show/" + imageData.id,
+                href: "https://konachan.net/post/show/" + imageData.id,
             },
         });
         this.el.append(sourceLine.wrapper, konachanLine.wrapper);
-        fetchImage.src = src;
+        this.fetchImage.src = imageData.src;
     },
     os: async function (context) {
         const fingerPrintInfo = context.state.fingerPrintInfo;
