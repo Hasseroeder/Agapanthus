@@ -31,25 +31,14 @@ function getUtcOffsetString(timeZone) {
     }).format(utcOffset);
 }
 
-function getOSIcon(osName) {
-    return (
-        {
-            linux: "󰌽",
-            android: "󰀲",
-            windows: "󰨡",
-            ios: "",
-            macos: "",
-        }[osName.toLowerCase()] ?? ""
-    );
-}
-
 const renderFunctionRegistry = {
+    header: async function (context) {
+        appendHeader(this.el, this.data.textContent);
+    },
     hostname: async function (context) {
         appendHeader(this.el, context.hostname);
-        appendHeader(this.el, "-".repeat(context.hostname.length));
     },
     image: async function (context) {
-        appendHeader(this.el, this.data.header ?? "Image");
         this.el.append(this.progressLine.wrapper);
 
         const fetchImage = make("img", {
@@ -69,16 +58,14 @@ const renderFunctionRegistry = {
         const { src, id, source } = response;
         const sourceLine = new FastfetchLine({
             keyConfig: {
-                category: "Image",
-                emoji: this.data.emoji,
+                ...this.data.keyConfig,
                 textContent: "Source",
             },
             valueConfig: { textContent: source, href: source },
         });
         const konachanLine = new FastfetchLine({
             keyConfig: {
-                category: "Image",
-                emoji: this.data.emoji,
+                ...this.data.keyConfig,
                 textContent: "Konachan",
             },
             valueConfig: {
@@ -86,21 +73,13 @@ const renderFunctionRegistry = {
                 href: "https://konachan.net/post/show/" + id,
             },
         });
-        this.progressLine.remove();
         this.el.append(sourceLine.wrapper, konachanLine.wrapper);
         fetchImage.src = src;
     },
-    platform: async function (context) {
+    os: async function (context) {
         const fingerPrintInfo = context.fingerPrintInfo;
-        appendHeader(this.el, this.data.header ?? "Platform");
-        this.el.append(this.progressLine.wrapper);
-
-        const OSline = new FastfetchLine({
-            keyConfig: {
-                category: "Platform",
-                emoji: getOSIcon(fingerPrintInfo.os.name),
-                textContent: "OS",
-            },
+        const line = new FastfetchLine({
+            keyConfig: this.data.keyConfig,
             valueConfig: {
                 textContent:
                     fingerPrintInfo.platform.type +
@@ -108,38 +87,43 @@ const renderFunctionRegistry = {
                     fingerPrintInfo.os.name.toLowerCase(),
             },
         });
+        const OSicon = {
+            linux: "󰌽",
+            android: "󰀲",
+            windows: "󰨡",
+            ios: "",
+            macos: "",
+        }[fingerPrintInfo.os.name.toLowerCase()];
+        if (OSicon) line.key.emoji = OSicon;
 
-        const localeLine = new FastfetchLine({
-            keyConfig: {
-                category: "Platform",
-                emoji: "",
-                textContent: "locale",
-            },
+        this.el.append(line.wrapper);
+    },
+    locale: async function (context) {
+        const line = new FastfetchLine({
+            keyConfig: this.data.keyConfig,
             valueConfig: {
-                textContent: fingerPrintInfo.language,
+                textContent: context.fingerPrintInfo.language,
             },
         });
-        this.el.append(OSline.wrapper, localeLine.wrapper);
+        this.el.append(line.wrapper);
     },
     time: async function (context) {
-        appendHeader(this.el, this.data.header ?? "Time");
         this.el.append(this.progressLine.wrapper);
 
         this.data.timezones.forEach((tz) => {
             const utcString = getUtcOffsetString(tz.timeZone);
             const region = tz.timeZone.split("/")[0];
-            const globeIcon =
-                {
-                    Africa: "",
-                    America: "",
-                    Asia: "",
-                    Europe: "",
-                }[region] ?? "󰊷";
+            const globeIcon = {
+                Africa: "",
+                America: "",
+                Asia: "",
+                Europe: "",
+            }[region];
 
             const clockLine = new FastfetchLine({
                 keyConfig: {
-                    category: "Time",
-                    emoji: globeIcon,
+                    category: this.data.keyConfig.category,
+                    emoji: globeIcon ?? this.data.keyConfig.emoji,
                     textContent: tz.airport + " UTC" + utcString,
                 },
                 valueConfig: {
@@ -157,26 +141,20 @@ const renderFunctionRegistry = {
             setInterval(update, 10 * 1000);
         });
     },
-    connection: async function (context) {
-        appendHeader(this.el, this.data.header ?? "Connected from");
+    ip: async function (context) {
         this.el.append(this.progressLine.wrapper);
-
         const locationData = await getLocation(context);
-        const ipLine = new FastfetchLine({
-            keyConfig: {
-                category: "Connection",
-                emoji: "󰌘",
-                textContent: "IPv4",
-            },
+        const line = new FastfetchLine({
+            keyConfig: this.data.keyConfig,
             valueConfig: { textContent: locationData.ip },
         });
-
-        const locationLine = new FastfetchLine({
-            keyConfig: {
-                category: "Connection",
-                emoji: "",
-                textContent: "Location",
-            },
+        this.el.append(line.wrapper);
+    },
+    location: async function (context) {
+        this.el.append(this.progressLine.wrapper);
+        const locationData = await getLocation(context);
+        const line = new FastfetchLine({
+            keyConfig: this.data.keyConfig,
             valueConfig: {
                 textContent:
                     locationData.city +
@@ -186,11 +164,9 @@ const renderFunctionRegistry = {
                     locationData.country,
             },
         });
-        this.progressLine.remove();
-        this.el.append(ipLine.wrapper, locationLine.wrapper);
+        this.el.append(line.wrapper);
     },
     weather: async function (context) {
-        appendHeader(this.el, this.data.header ?? "Local Weather");
         this.el.append(this.progressLine.wrapper);
 
         const locationData = await getLocation(context);
@@ -222,22 +198,22 @@ const renderFunctionRegistry = {
             const rainStr =
                 weatherCode +
                 " " +
-                `(${dailyData.precipitation_probability_max[i]}% precip.)`;
+                `(${dailyData.precipitation_probability_max[i]}% prob.)`;
             const tempStr =
                 ` ${dailyData.temperature_2m_max[i]}°C`.padEnd(10) +
                 ` ${dailyData.temperature_2m_min[i]}°C`;
 
             const line = new FastfetchLine({
                 keyConfig: {
-                    category: "Weather",
-                    emoji: this.data.emoji,
-                    textContent: date.toLocaleString(...this.data.dateFormat),
+                    ...this.data.keyConfig,
+                    textContent: date.toLocaleString(
+                        ...this.data.keyConfig.dateFormat,
+                    ),
                 },
                 valueConfig: {
                     textContent: rainStr.padEnd(35) + tempStr,
                 },
             });
-            this.progressLine.remove();
             this.el.append(line.wrapper);
         });
     },

@@ -13,7 +13,7 @@ export class FastfetchModule {
         this.el = make("div", { className: "fastfetch-module" });
         this.progressLine = new FastfetchLine({
             keyConfig: {
-                emoji: this.data.emoji ?? "",
+                ...this.data.keyConfig,
                 textContent: "Module",
             },
             valueConfig: { textContent: "in progress" },
