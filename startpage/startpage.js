@@ -1,6 +1,6 @@
 import { loadJson } from "/js/util/jsonUtil.js";
 import { make } from "/js/util/injectionUtil.js";
-import { createFetchModules } from "/startpage/fastfetchModules.js";
+import { createFastfetchModule } from "/startpage/fastfetchModules.js";
 
 const wrapper = document.querySelector(".fastfetch-wrapper");
 const fetchTextWrapper = document.querySelector(".fetch-text-wrapper");
@@ -23,7 +23,9 @@ async function updateFingerprinting(config) {
         (el) => (el.textContent = hostname),
     );
 
-    const fetchModules = createFetchModules(config.fetchModules);
+    const fetchModules = config.fetchModules.map((config) =>
+        createFastfetchModule(config),
+    );
     const context = {
         config,
         wrapper,

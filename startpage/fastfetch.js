@@ -1,10 +1,10 @@
 import { make } from "../js/util/injectionUtil.js";
 
 export class FastfetchModule {
-    constructor(config, registryEntry) {
+    constructor(config) {
         this.slug = config.slug;
-        this.data = { ...(registryEntry.data ?? {}), ...(config.data ?? {}) };
-        this.renderContent = registryEntry.renderContent;
+        this.data = { ...(config.data ?? {}) };
+        this.renderContent = config.renderContent;
         this.el = null;
         this.progressLine = null;
     }
@@ -14,7 +14,7 @@ export class FastfetchModule {
         this.progressLine = new FastfetchLine({
             keyConfig: {
                 emoji: this.data.emoji ?? "",
-                textContent: this.data.textContent ?? "Module",
+                textContent: "Module",
             },
             valueConfig: { textContent: "in progress" },
         });
