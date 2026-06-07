@@ -36,7 +36,7 @@ a:hover {
     gap: 0.3rem;
 }
 
-.fastfetch-wrapper {
+.top-window-output {
     display: flex;
     gap: 1rem;
 }
@@ -52,4 +52,16 @@ a:hover {
 
 .fastfetch-module {
     display: grid;
+}
+
+#fetch-window-command-input {
+    caret-shape: block;
+    background: transparent;
+    color: lightgray;
+    border: none;
+    width: -moz-available;
+    padding: 0;
+    margin: 0;
+    outline: none;
+    font-family: MesloLGM Nerd Font;
 }

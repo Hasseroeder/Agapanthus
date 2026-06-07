@@ -47,7 +47,7 @@ const renderFunctionRegistry = {
             className: "fastfetch-image",
             referrerPolicy: "no-referrer",
         });
-        context.wrapper.prepend(fetchImage);
+        context.fetchWrapper.prepend(fetchImage);
         const antix1Fetch = await fetch("https://antix1.transaero.space/api/", {
             method: "GET",
             headers: {
