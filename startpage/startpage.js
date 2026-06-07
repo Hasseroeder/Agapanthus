@@ -1,7 +1,6 @@
 import { loadJson } from "/js/util/jsonUtil.js";
 import { make } from "/js/util/injectionUtil.js";
 import { createFetchModules } from "/startpage/fastfetchModules.js";
-import { fastfetchLine } from "/startpage/fastfetch.js";
 
 const wrapper = document.querySelector(".fastfetch-wrapper");
 const fetchTextWrapper = document.querySelector(".fetch-text-wrapper");

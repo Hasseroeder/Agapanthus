@@ -1,6 +1,6 @@
 import { loadJson } from "/js/util/jsonUtil.js";
 import { make } from "/js/util/injectionUtil.js";
-import { fastfetchLine } from "/startpage/fastfetch.js";
+import { FastfetchModule, FastfetchLine } from "/startpage/fastfetch.js";
 
 const weatherCodesPromise = loadJson("/startpage/media/weather_codes.json");
 
@@ -73,7 +73,7 @@ const fastfetchModuleRegistry = {
 
             const response = await antix1Fetch.json();
             const { src, id, source } = response;
-            const sourceLine = new fastfetchLine({
+            const sourceLine = new FastfetchLine({
                 keyConfig: {
                     category: "Image",
                     emoji: this.data.emoji,
@@ -81,7 +81,7 @@ const fastfetchModuleRegistry = {
                 },
                 valueConfig: { textContent: source, href: source },
             });
-            const konachanLine = new fastfetchLine({
+            const konachanLine = new FastfetchLine({
                 keyConfig: {
                     category: "Image",
                     emoji: this.data.emoji,
@@ -103,7 +103,7 @@ const fastfetchModuleRegistry = {
             appendHeader(this.el, this.data.header ?? "Platform");
             this.el.append(this.progressLine.wrapper);
 
-            const OSline = new fastfetchLine({
+            const OSline = new FastfetchLine({
                 keyConfig: {
                     category: "Platform",
                     emoji: getOSIcon(fingerPrintInfo.os.name),
@@ -117,7 +117,7 @@ const fastfetchModuleRegistry = {
                 },
             });
 
-            const localeLine = new fastfetchLine({
+            const localeLine = new FastfetchLine({
                 keyConfig: {
                     category: "Platform",
                     emoji: "",
@@ -146,7 +146,7 @@ const fastfetchModuleRegistry = {
                         Europe: "",
                     }[region] ?? "󰊷";
 
-                const clockLine = new fastfetchLine({
+                const clockLine = new FastfetchLine({
                     keyConfig: {
                         category: "Time",
                         emoji: globeIcon,
@@ -172,7 +172,7 @@ const fastfetchModuleRegistry = {
             this.el.append(this.progressLine.wrapper);
 
             const locationData = await getLocation(context);
-            const ipLine = new fastfetchLine({
+            const ipLine = new FastfetchLine({
                 keyConfig: {
                     category: "Connection",
                     emoji: "󰌘",
@@ -181,7 +181,7 @@ const fastfetchModuleRegistry = {
                 valueConfig: { textContent: locationData.ip },
             });
 
-            const locationLine = new fastfetchLine({
+            const locationLine = new FastfetchLine({
                 keyConfig: {
                     category: "Connection",
                     emoji: "",
@@ -239,7 +239,7 @@ const fastfetchModuleRegistry = {
                     ` ${dailyData.temperature_2m_max[i]}°C`.padEnd(10) +
                     ` ${dailyData.temperature_2m_min[i]}°C`;
 
-                const line = new fastfetchLine({
+                const line = new FastfetchLine({
                     keyConfig: {
                         category: "Weather",
                         emoji: this.data.emoji,
@@ -258,48 +258,13 @@ const fastfetchModuleRegistry = {
     },
 };
 
-Object.values(fastfetchModuleRegistry).forEach((module) => {
-    module.tryRenderContent = async function (context) {
-        try {
-            await this.renderContent(context);
-            this.progressLine.remove();
-        } catch (error) {
-            this.progressLine.value.el.textContent = "failed";
-            console.error("Error loading module:", error);
-        }
-    };
-    module.init = function (context) {
-        this.el = make("div", { className: "fastfetch-module" });
-        this.progressLine = new fastfetchLine({
-            keyConfig: {
-                emoji: this.data.emoji ?? "",
-                textContent: this.data.textContent ?? "Module",
-            },
-            valueConfig: {
-                textContent: "in progress",
-            },
-        });
-        context.fetchTextWrapper.append(this.el);
-    };
-});
-
 export function createFetchModules(moduleConfigs) {
-    return moduleConfigs.flatMap((moduleConfig) => {
-        const registeredModule = fastfetchModuleRegistry[moduleConfig.slug];
-        if (!registeredModule) {
-            console.warn("Unknown fastfetch module:", moduleConfig.slug);
+    return moduleConfigs.flatMap((config) => {
+        const entry = fastfetchModuleRegistry[config.slug];
+        if (!entry) {
+            console.warn("Unknown fastfetch module:", config.slug);
             return [];
         }
-
-        return [
-            {
-                ...registeredModule,
-                ...moduleConfig,
-                data: {
-                    ...(registeredModule.data ?? {}),
-                    ...(moduleConfig.data ?? {}),
-                },
-            },
-        ];
+        return [new FastfetchModule(config, entry)];
     });
 }

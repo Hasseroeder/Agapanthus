@@ -1,11 +1,43 @@
 import { make } from "../js/util/injectionUtil.js";
 
-export class fastfetchLine {
+export class FastfetchModule {
+    constructor(config, registryEntry) {
+        this.slug = config.slug;
+        this.data = { ...(registryEntry.data ?? {}), ...(config.data ?? {}) };
+        this.renderContent = registryEntry.renderContent;
+        this.el = null;
+        this.progressLine = null;
+    }
+
+    init(context) {
+        this.el = make("div", { className: "fastfetch-module" });
+        this.progressLine = new FastfetchLine({
+            keyConfig: {
+                emoji: this.data.emoji ?? "",
+                textContent: this.data.textContent ?? "Module",
+            },
+            valueConfig: { textContent: "in progress" },
+        });
+        context.fetchTextWrapper.append(this.el);
+    }
+
+    async tryRenderContent(context) {
+        try {
+            await this.renderContent(context);
+            this.progressLine.remove();
+        } catch (err) {
+            this.progressLine.value.el.textContent = "failed";
+            console.error(`Error loading module '${this.slug}':`, err);
+        }
+    }
+}
+
+export class FastfetchLine {
     constructor(config) {
         const { keyConfig, valueConfig } = config;
 
-        this.key = new fastfetchKey(keyConfig);
-        this.value = new fastfetchValue(valueConfig);
+        this.key = new FastfetchKey(keyConfig);
+        this.value = new FastfetchValue(valueConfig);
         this.wrapper = make("span", { className: "command-line" }, [
             this.key.el,
             this.value.el,
@@ -13,17 +45,17 @@ export class fastfetchLine {
     }
     remove() {
         this.wrapper.remove();
-        const toRemoveIdx = fastfetchKey.array.findIndex(
+        const toRemoveIdx = FastfetchKey.array.findIndex(
             (key) => key === this.key,
         );
         if (toRemoveIdx !== -1) {
-            fastfetchKey.array.splice(toRemoveIdx, 1);
-            fastfetchKey.update();
+            FastfetchKey.array.splice(toRemoveIdx, 1);
+            FastfetchKey.update();
         }
     }
 }
 
-class fastfetchValue {
+class FastfetchValue {
     constructor({ textContent, href }) {
         if (href) {
             this.el = make("a", { textContent, href });
@@ -33,7 +65,7 @@ class fastfetchValue {
     }
 }
 
-class fastfetchKey {
+class FastfetchKey {
     constructor({ category, emoji, textContent }) {
         this.category = category;
         this._emoji = emoji;
@@ -42,8 +74,8 @@ class fastfetchKey {
         this.structure = "├";
 
         this.el = make("span");
-        fastfetchKey.array.push(this);
-        fastfetchKey.update();
+        FastfetchKey.array.push(this);
+        FastfetchKey.update();
     }
 
     get emoji() {
@@ -67,14 +99,14 @@ class fastfetchKey {
             `${this.structure} ` +
             `${this._emoji}  ` +
             this.textContent.padEnd(this.textpadding) +
-            fastfetchKey.separator;
+            FastfetchKey.separator;
     }
     static array = [];
     static separator = "  ⇀ ";
     static update() {
         const groups = new Map();
         let maxPadding = 0;
-        for (const key of fastfetchKey.array) {
+        for (const key of FastfetchKey.array) {
             maxPadding = Math.max(maxPadding, key.textpadding);
             !groups.has(key.category) && groups.set(key.category, []);
             groups.get(key.category).push(key);
@@ -86,7 +118,7 @@ class fastfetchKey {
                 else key.structure = "├";
             });
         }
-        for (const key of fastfetchKey.array) {
+        for (const key of FastfetchKey.array) {
             key.textpadding = maxPadding;
             key.update();
         }
