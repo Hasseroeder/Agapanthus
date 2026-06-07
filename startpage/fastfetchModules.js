@@ -35,7 +35,7 @@ const renderFunctionRegistry = {
         this.el.append(
             make("span", {
                 className: "command-line",
-                textContent: context.hostname,
+                textContent: context.state.hostname,
             }),
         );
     },
@@ -47,7 +47,7 @@ const renderFunctionRegistry = {
             className: "fastfetch-image",
             referrerPolicy: "no-referrer",
         });
-        context.fetchWrapper.prepend(fetchImage);
+        context.wrapper.prepend(fetchImage);
         const antix1Fetch = await fetch("https://antix1.transaero.space/api/", {
             method: "GET",
             headers: {
@@ -78,7 +78,7 @@ const renderFunctionRegistry = {
         fetchImage.src = src;
     },
     os: async function (context) {
-        const fingerPrintInfo = context.fingerPrintInfo;
+        const fingerPrintInfo = context.state.fingerPrintInfo;
         const line = new FastfetchLine({
             keyConfig: this.data.keyConfig,
             valueConfig: {
@@ -103,7 +103,7 @@ const renderFunctionRegistry = {
         const line = new FastfetchLine({
             keyConfig: this.data.keyConfig,
             valueConfig: {
-                textContent: context.fingerPrintInfo.language,
+                textContent: context.state.fingerPrintInfo.language,
             },
         });
         this.el.append(line.wrapper);

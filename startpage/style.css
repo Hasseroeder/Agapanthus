@@ -28,7 +28,7 @@ a:hover {
     white-space: pre;
 }
 
-.fastfetch-window {
+.top-window {
     padding: 0.5rem;
     display: flex;
     flex-direction: column;
@@ -36,7 +36,7 @@ a:hover {
     gap: 0.3rem;
 }
 
-.top-window-output {
+.top-output {
     display: flex;
     gap: 1rem;
 }
@@ -50,11 +50,11 @@ a:hover {
     height: min-content;
 }
 
-.fastfetch-module {
+.grid {
     display: grid;
 }
 
-#fetch-window-command-input {
+#top-input {
     caret-shape: block;
     background: transparent;
     color: lightgray;

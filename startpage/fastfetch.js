@@ -10,7 +10,7 @@ export class FastfetchModule {
     }
 
     init(context) {
-        this.el = make("div", { className: "fastfetch-module" });
+        this.el = make("div", { className: "grid" });
         this.progressLine = new FastfetchLine({
             keyConfig: {
                 ...this.data.keyConfig,
@@ -18,7 +18,7 @@ export class FastfetchModule {
             },
             valueConfig: { textContent: "in progress" },
         });
-        context.fetchTextWrapper.append(this.el);
+        context.textWrapper.append(this.el);
     }
 
     async tryRenderContent(context) {

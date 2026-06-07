@@ -16,19 +16,21 @@
         />
     </head>
     <body>
-        <section class="fastfetch-window">
+        <section class="top-window">
             <div class="command-line">
                 <span class="hostname"></span>
                 <span class="directory">~</span>
                 <span class="prompt">></span>
-                <span id="last-command" class="command"></span>
+                <span id="top-last-command" class="command"></span>
             </div>
-            <div class="top-window-output"></div>
+            <div class="command-line">&nbsp;</div>
+            <div class="top-output"></div>
+            <div class="command-line">&nbsp;</div>
             <div class="command-line" style="display: flex">
                 <span class="hostname"></span>
                 <span class="directory"> ~ </span>
                 <span class="prompt">> </span>
-                <input type="text" id="fetch-window-command-input" />
+                <input type="text" id="top-input" />
             </div>
         </section>
         <script src="https://unpkg.com/bowser@2.4.0/es5.js"></script>
