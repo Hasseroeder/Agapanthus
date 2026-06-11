@@ -60,6 +60,7 @@ a:hover {
     margin: 0;
     outline: none;
     font-family: MesloLGM Nerd Font;
+    font-size: 0.8rem;
 }
 
 .command-input {
