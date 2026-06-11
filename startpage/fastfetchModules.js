@@ -46,7 +46,7 @@ const renderFunctionRegistry = {
             className: "fastfetch-image",
             referrerPolicy: "no-referrer",
         });
-        context.wrapper.prepend(this.fetchImage);
+        context.fetchWrapper.prepend(this.fetchImage);
         let imageData = {
             src: "/startpage/media/backupImage.jpg",
             id: 399022,

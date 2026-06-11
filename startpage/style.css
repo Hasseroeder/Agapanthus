@@ -23,20 +23,16 @@ a:hover {
         MesloLGM Nerd Font,
         monospace;
     font-size: 0.8rem;
-}
-.command-line > span {
     white-space: pre;
 }
 
-.top-window {
+.body-wrapper {
     padding: 0.5rem;
     display: flex;
     flex-direction: column;
-    border-bottom: 2px solid #333;
-    gap: 0.3rem;
 }
 
-.top-output {
+.fetch-wrapper {
     display: flex;
     gap: 1rem;
 }
@@ -54,7 +50,7 @@ a:hover {
     display: grid;
 }
 
-#top-input {
+.command-line input {
     caret-shape: block;
     background: transparent;
     color: lightgray;
@@ -64,4 +60,12 @@ a:hover {
     margin: 0;
     outline: none;
     font-family: MesloLGM Nerd Font;
+}
+
+.command-input {
+    margin-top: -0.025rem;
+    /* 
+    I have no clue why a certain amount of padding is built in and not avoidable,
+    I am getting rid of it here.
+    */
 }
