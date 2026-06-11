@@ -82,11 +82,7 @@ function fastfetch(wrapper) {
     const fetchWrapper = make("div", { className: "fetch-wrapper" });
     const textWrapper = make("div", { className: "fetch-text-wrapper" });
     fetchWrapper.append(textWrapper);
-    wrapper.append(
-        make("div", { className: "command-line", textContent: " " }),
-        fetchWrapper,
-        make("div", { className: "command-line", textContent: " " }),
-    );
+    wrapper.append(new Line(), fetchWrapper, new Line());
 
     const context = {
         state,
