@@ -1,0 +1,143 @@
+@use "variables" as *;
+@use "cursors";
+
+body {
+  font-family: $font-sans;
+  background-color: $bg-page;
+  color: $color-text;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: $color-link;
+
+  &:hover {
+    color: $color-link-hover;
+  }
+}
+
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: url("/media/images/background/export4.png");
+  background-size: 7%;
+  pointer-events: none;
+}
+
+.pillar {
+  width: 70%;
+  min-width: 1000px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.25rem 0;
+  background-color: $bg-pillar;
+}
+
+.landing {
+  margin: 4rem;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  background-color: $bg-surface;
+  padding: 0.625rem;
+  margin: 0 2.5rem;
+  border-bottom: 2px solid $color-accent;
+  border-radius: 1.5px;
+
+  &__link {
+    color: $color-text;
+    padding: 0.5rem;
+    text-decoration: none;
+    margin: 0 5px;
+    border-radius: 2px;
+
+    &:hover {
+      background-color: $bg-surface-hover;
+      color: $color-text;
+    }
+  }
+}
+
+.clock-picker {
+  position: relative;
+  margin-left: auto;
+  background-color: $bg-dark;
+
+  &__control {
+    position: relative;
+    height: 2rem;
+    width: 15rem;
+    margin: 0 1rem;
+
+    > * {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-color: transparent;
+      color: $color-text-muted;
+      font-size: 1rem;
+      margin: 0;
+      border: none;
+      font-family: inherit;
+    }
+  }
+
+  &__display {
+    display: flex;
+    align-items: center;
+    padding-top: 0.05rem;
+  }
+
+  &__output {
+    width: 100%;
+  }
+
+  &__dropdown {
+    position: absolute;
+    right: 0;
+    left: 0;
+    padding: 0 1rem;
+    background-color: $bg-surface;
+    z-index: 10;
+  }
+
+  &__item {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    font-size: 0.7rem;
+    padding: 0.2rem;
+
+    &--selected {
+      background-color: $bg-dark;
+    }
+  }
+
+  &__time {
+    font-size: 1.5rem;
+  }
+}
+
+.footer {
+  margin: 2rem 4rem;
+  gap: 0.5rem;
+  display: flex;
+
+  &__link {
+    display: block;
+    flex: 1 1 0;
+  }
+
+  &__blinkie {
+    flex: 1 1 0;
+    min-width: 0;
+    height: auto;
+    max-width: 100%;
+    display: block;
+  }
+}

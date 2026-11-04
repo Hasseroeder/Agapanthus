@@ -1,0 +1,27 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import "../../styles/gallery.scss";
+---
+
+<Layout title="gallery">
+  <link
+    slot="head"
+    rel="preload"
+    href="/gallery/manifest.csv"
+    as="fetch"
+    crossorigin="anonymous"
+  />
+  <section class="gallery">
+    <div class="gallery__controls">
+      <button class="gallery__button" type="button">&lt;&lt;</button>
+      <select class="gallery__select" aria-label="Art category"></select>
+      <button class="gallery__button" type="button">&gt;&gt;</button>
+    </div>
+    <div id="artWrapper" class="gallery__grid"></div>
+  </section>
+</Layout>
+
+<script>
+  import { initGallery } from "../../scripts/gallery";
+  initGallery();
+</script>

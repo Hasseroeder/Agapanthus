@@ -1,0 +1,65 @@
+@use "sass:list";
+
+$cursors: (
+  auto: (auto, "tbh-normal.cur"),
+  default: (default, "tbh-normal.cur"),
+  pointer: (pointer, "tbh-link.cur"),
+  text: (text, "tbh-text.cur"),
+  vertical-text: (vertical-text, "tbh-text.cur"),
+  crosshair: (crosshair, "tbh-crosshair.cur"),
+  move: (move, "tbh-move.cur"),
+  grab: (grab, "tbh-crosshair.cur"),
+  grabbing: (grabbing, "tbh-crosshair.cur"),
+  not-allowed: (not-allowed, "tbh-no.ani"),
+  wait: (wait, "tbh-working.ani"),
+  progress: (progress, "tbh-busy.ani"),
+  resize-ew: (ew-resize, "tbh-horizontal.cur"),
+  resize-ns: (ns-resize, "tbh-vertical.cur"),
+  resize-nesw: (nesw-resize, "tbh-nesw.cur"),
+  resize-nwse: (nwse-resize, "tbh-nwse.cur"),
+);
+
+:root {
+  @each $name, $pair in $cursors {
+    --cur-#{$name}: #{list.nth($pair, 1)};
+  }
+}
+
+body.tbh {
+  @each $name, $pair in $cursors {
+    --cur-#{$name}: url("/media/tbhCursors/#{list.nth($pair, 2)}"), #{list.nth($pair, 1)};
+  }
+}
+
+* {
+  cursor: inherit;
+}
+
+html,
+body {
+  cursor: var(--cur-default);
+}
+
+a,
+button,
+[role="button"] {
+  cursor: var(--cur-pointer);
+}
+
+input,
+textarea,
+code,
+[contenteditable] {
+  cursor: var(--cur-text);
+}
+
+@each $name, $pair in $cursors {
+  .u-cursor-#{$name},
+  .#{$name} {
+    cursor: var(--cur-#{$name});
+  }
+}
+
+.loading {
+  cursor: var(--cur-progress);
+}

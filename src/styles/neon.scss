@@ -1,0 +1,52 @@
+@use "variables" as *;
+
+.neon {
+  margin: 1rem 4rem;
+  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+
+  &__text {
+    font-family: $font-mono;
+    margin: 0;
+  }
+
+  &__panel {
+    padding: 2rem;
+    background-color: $bg-surface;
+
+    &--controls {
+      display: flex;
+    }
+  }
+
+  &__upload {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  &__field {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  &__number-input {
+    height: 1rem;
+    width: 5rem;
+    margin-left: auto;
+  }
+
+  &__id {
+    font-family: $font-mono;
+    margin: 0 1rem;
+    padding: 0.075rem 0.2rem;
+    background-color: $bg-pillar;
+    border-radius: 0.3rem;
+  }
+
+  &__emoji {
+    height: 1.2rem;
+  }
+}

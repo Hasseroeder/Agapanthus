@@ -1,0 +1,66 @@
+@use "variables" as *;
+
+.gallery {
+  &__controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 4rem;
+  }
+
+  &__button {
+    @include surface-control(1.5px);
+    min-width: 3rem;
+    min-height: 1.5rem;
+  }
+
+  &__select {
+    @include surface-control(1.5px);
+    min-width: 10rem;
+    min-height: 1.5rem;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    margin: 2rem;
+  }
+}
+
+.art-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  outline: 9px outset $bg-pillar;
+  margin: 1.5rem;
+
+  &__viewer {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  &__nav {
+    @include surface-control(3px);
+    min-width: 2rem;
+  }
+
+  &__image {
+    width: 55%;
+    transition-duration: 0.15s;
+
+    &--multi {
+      width: 62.5%;
+    }
+
+    &:hover {
+      transform: scale(1.39);
+    }
+  }
+
+  &__title {
+    margin-bottom: 0;
+  }
+}

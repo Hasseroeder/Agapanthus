@@ -1,0 +1,24 @@
+<nav class="toolbar">
+  <a class="toolbar__link" href="/">home</a>
+  <a class="toolbar__link" href="/gallery/">gallery</a>
+  <a class="toolbar__link" href="/neon/">weapon.json</a>
+  <div class="clock-picker">
+    <div class="clock-picker__control">
+      <div class="clock-picker__display">
+        <div id="outputClock" class="clock-picker__output"></div>
+      </div>
+      <input
+        id="timezoneSearch"
+        class="clock-picker__input"
+        type="text"
+        aria-label="Search timezone"
+      />
+    </div>
+    <div id="timeWrapper" class="clock-picker__dropdown"></div>
+  </div>
+</nav>
+
+<script>
+  import { initClock } from "../scripts/clock";
+  initClock();
+</script>

@@ -1,0 +1,26 @@
+$bg-page: #101010;
+$bg-dark: #151515;
+$bg-pillar: #222222;
+$bg-surface: #333333;
+$bg-surface-hover: #555555;
+
+$color-text: lightgray;
+$color-text-muted: #bbbbbb;
+$color-accent: #8b7e9b;
+$color-link: #6d97c0;
+$color-link-hover: #70b7cf;
+
+$font-sans: Whitney, "Helvetica Neue", Helvetica, Arial, sans-serif;
+$font-mono: monospace;
+
+@mixin surface-control($radius: 1.5px) {
+  background-color: $bg-surface;
+  border: none;
+  border-bottom: 2px solid $color-accent;
+  color: $color-text;
+  border-radius: $radius;
+
+  &:hover {
+    background-color: $bg-surface-hover;
+  }
+}

@@ -1,0 +1,33 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import "../../styles/neon.scss";
+---
+
+<Layout title="neon">
+  <section class="neon">
+    <div class="neon__panel neon__panel--controls">
+      <div class="neon__upload">
+        <p class="neon__text">input your Neon export here:</p>
+        <input class="neon__file-input" type="file" id="input" accept=".json" />
+      </div>
+      <div class="neon__pagination">
+        <label class="neon__field">
+          <p class="neon__text">Items per Page</p>
+          <input class="neon__number-input" id="pageSize" type="number" value="100" min="1" />
+        </label>
+        <label class="neon__field">
+          <p class="neon__text">Page</p>
+          <input class="neon__number-input" id="page" type="number" min="1" value="1" />
+        </label>
+      </div>
+    </div>
+    <div class="neon__panel">
+      <table id="weaponTable" class="neon__table"></table>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  import { initNeon } from "../../scripts/neon";
+  initNeon();
+</script>
